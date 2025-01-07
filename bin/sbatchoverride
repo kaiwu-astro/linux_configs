@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Check for at least one argument
+if [ "$#" -lt 1 ]; then
+    echo "Usage: sbatchoverride [override-options..] sbatch-filename"
+    exit 1
+fi
+
+# Extract sbatch filename and options
+for arg in "$@"; do
+    if [[ ! "$arg" =~ ^-- ]]; then
+        SBATCH_FILE="$arg"
+        break
+    fi
+done
+
+# Verify sbatch file was specified
+if [ -z "$SBATCH_FILE" ]; then
+    echo "Error: sbatch filename is required."
+    exit 1
+fi
+
+# Verify the sbatch file exists
+if [ ! -f "$SBATCH_FILE" ]; then
+    echo "Error: File '$SBATCH_FILE' not found."
+    exit 1
+fi
+
+# Create a temporary copy of the original sbatch file
+TEMP_FILE="${SBATCH_FILE}.bak"
+cp "$SBATCH_FILE" "$TEMP_FILE"
+
+# Process override-options
+for option in "$@"; do
+    # Skip the sbatch filename
+    if [[ "$option" == "$SBATCH_FILE" ]]; then
+        continue
+    fi
+
+    # Ensure option starts with '--'
+    if [[ "$option" != --* ]]; then
+        echo "Error: Invalid override option '$option'. Options must start with '--'."
+        exit 1
+    fi
+
+    # Extract parameter name and value
+    PARAM_NAME=$(echo "$option" | cut -d= -f1 | sed 's/^--//')
+    PARAM_VALUE=$(echo "$option" | cut -d= -f2-)
+
+    # Check if parameter exists in the sbatch file
+    if grep -qP "^#SBATCH\s+--$PARAM_NAME=" "$SBATCH_FILE"; then
+        # Replace the existing parameter value
+        sed -i "s|^#SBATCH\s\+--$PARAM_NAME=.*|#SBATCH --$PARAM_NAME=$PARAM_VALUE|" "$SBATCH_FILE"
+    else
+        # Add the parameter if it does not exist
+        echo "#SBATCH --$PARAM_NAME=$PARAM_VALUE" >> "$SBATCH_FILE"
+    fi
+
+done
+
+# Show the difference between original and modified files
+echo "Modifications made to $SBATCH_FILE:"
+diff "$TEMP_FILE" "$SBATCH_FILE"
+
+# Remove the temporary file
+rm "$TEMP_FILE"
+
+# Submit the sbatch file
+sbatch "$SBATCH_FILE"
+
