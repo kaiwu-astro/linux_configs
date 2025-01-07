@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+import time
+import sys
+try:
+    t=0
+    while True:
+        sys.stdout.write("holding session..."+str(round(t,1))+" min")
+        sys.stdout.flush()
+        time.sleep(30)
+        sys.stdout.write("\r")
+        t+=0.5
+except KeyboardInterrupt:
+    print('')

@@ -247,7 +247,7 @@ if [[ $BASH_VERSION ]]; then
     multi_shell_share_history
 fi
 
-export PATH="$HOME/bin:$HOME/user-software/bin:$PATH"
+export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
 
 ##############
 

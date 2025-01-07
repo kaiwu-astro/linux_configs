@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# 检查是否提供了作业ID
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 JOBID"
+    exit 1
+fi
+
+JOBID=$1
+
+# 检查作业状态的函数
+check_job_status() {
+    # 使用squeue检查作业状态
+    squeue -j "$JOBID" > /dev/null 2>&1
+    return $?
+}
+
+# 主循环，等待作业完成
+while true; do
+    check_job_status
+    if [ $? -ne 0 ]; then
+        echo "Job $JOBID has completed."
+        break
+    fi
+    echo "Job $JOBID is still running. Checking again in 5 seconds..."
+    sleep 5
+done
+
+exit 0
+
