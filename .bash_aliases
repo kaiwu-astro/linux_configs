@@ -4,7 +4,7 @@ type emulate >/dev/null 2>/dev/null || alias emulate=true
 # if not working, add source ~/.bash_aliases to ~/.profile
 # inner network machine: (ping -c 1 silk3 &> /dev/null && rsync silk3:~/.kai_config/ ~/ &> /dev/null &) 
 
-alias _do_upgrade_bash_aliases='[ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> /dev/null && mkdir -p ~/.kai_config && cd ~/.kai_config && rm -rf * &> /dev/null && wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip &> /dev/null && unzip -o kai_config.zip &> /dev/null && cd linux_configs-main && cp -pr .[!.]* ~/ && cp -pr * ~/ &> /dev/null'
+alias _do_upgrade_bash_aliases='[ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> /dev/null && mkdir -p ~/.kai_config && cd ~/.kai_config && rm -rf * &> /dev/null && wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip &> /dev/null && unzip -o kai_config.zip &> /dev/null && cd && rsync linux_configs-main/ ~ &> /dev/null'
 ((_do_upgrade_bash_aliases &> /dev/null &) &)
 
 if [ -f ~/.bash_aliases_local ]; then
