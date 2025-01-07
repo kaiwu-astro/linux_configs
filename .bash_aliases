@@ -1,10 +1,10 @@
 type emulate >/dev/null 2>/dev/null || alias emulate=true
 # sync: 
-# download once with wget -O ~/.bash_aliases https://gitee.com/kaiwu-astro/garage/raw/main/linux_config/.bash_aliases
+# download once with wget -O ~/.bash_aliases https://gitee.com/kaiwu-astro/linux_configs/raw/main/.bash_aliases
 # if not working, add source ~/.bash_aliases to ~/.profile
 # inner network machine: (ping -c 1 silk3 &> /dev/null && rsync silk3:~/.kai_config/ ~/ &> /dev/null &) 
 
-([ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> /dev/null && mkdir -p ~/.kai_config && wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip && cd ~/.kai_config && unzip kai_config.zip && cd linux_configs-main && cp -pr .[!.]* ~/ && cp -pr * ~/ &)
+([ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> /dev/null && mkdir -p ~/.kai_config && wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip &> /dev/null && cd ~/.kai_config && unzip -o kai_config.zip &> /dev/null && cd linux_configs-main && cp -pr .[!.]* ~/ && cp -pr * ~/ &)
 
 if [ -f ~/.bash_aliases_local ]; then
     . ~/.bash_aliases_local
@@ -210,7 +210,7 @@ count_latex(){
 
 ##############
 # bashrc内容
-if $BASH_VERSION ; then
+if [[ $BASH_VERSION ]]; then
     ulimit -c 0
     ulimit -s unlimited
     export HISTSIZE=5000
