@@ -4,7 +4,7 @@ type emulate >/dev/null 2>/dev/null || alias emulate=true
 # if not working, add source ~/.bash_aliases to ~/.profile
 # inner network machine: (ping -c 1 silk3 &> /dev/null && rsync silk3:~/.kai_config/ ~/ &> /dev/null &) 
 
-([ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> /dev/null && for configf in ".bash_aliases" ".vimrc" ".tmux.conf" ".config/htop/htoprc"; do mkdir -p `dirname ~/.kai_config/$configf`; mkdir -p `dirname ~/$configf`; wget -O ~/.kai_config/$configf https://gitee.com/kaiwu-astro/garage/raw/main/linux_config/$configf &> /dev/null; cp -p ~/.kai_config/$configf ~/$configf; done &)
+([ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> /dev/null && mkdir -p ~/.kai_config && wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip && cd ~/.kai_config && unzip kai_config.zip && cd linux_configs-main && cp -pr .[!.]* ~/ && cp -pr * ~/ &)
 
 if [ -f ~/.bash_aliases_local ]; then
     . ~/.bash_aliases_local
@@ -210,40 +210,42 @@ count_latex(){
 
 ##############
 # bashrc内容
-ulimit -c 0
-ulimit -s unlimited
-export HISTSIZE=5000
-export HISTFILESIZE=5000
-export SAVEHIST=5000
-shopt -s histappend
+if $BASH_VERSION ; then
+    ulimit -c 0
+    ulimit -s unlimited
+    export HISTSIZE=5000
+    export HISTFILESIZE=5000
+    export SAVEHIST=5000
+    shopt -s histappend
 
-color_number=$(( 0x$(cat /etc/machine-id | cut -c 1-2) % 6 + 31))
-PS1='[\A]${debian_chroot:+($debian_chroot)}\[\033[01;${color_number}m\]\u@\h\[\033[00m\]:\[\033[01;${color_number}m\]\w\[\033[00m\]\$ '
+    color_number=$(( 0x$(cat /etc/machine-id | cut -c 1-2) % 6 + 31))
+    PS1='[\A]${debian_chroot:+($debian_chroot)}\[\033[01;${color_number}m\]\u@\h\[\033[00m\]:\[\033[01;${color_number}m\]\w\[\033[00m\]\$ '
 
-function multi_shell_share_history {
+    function multi_shell_share_history {
 
-  if [[ -z "${PROMPT_COMMAND:+x}" ]]; then
-    PROMPT_COMMAND="history -a; history -r"
-  else
-    PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'/;}" # convert all new lines to semi-colons
-    PROMPT_COMMAND="${PROMPT_COMMAND#\;}" # remove leading semi-colon
-    PROMPT_COMMAND="${PROMPT_COMMAND%% }" # remove trailing spaces
-    PROMPT_COMMAND="${PROMPT_COMMAND%\;}" # remove trailing semi-colon
+    if [[ -z "${PROMPT_COMMAND:+x}" ]]; then
+        PROMPT_COMMAND="history -a; history -r"
+    else
+        PROMPT_COMMAND="${PROMPT_COMMAND//$'\n'/;}" # convert all new lines to semi-colons
+        PROMPT_COMMAND="${PROMPT_COMMAND#\;}" # remove leading semi-colon
+        PROMPT_COMMAND="${PROMPT_COMMAND%% }" # remove trailing spaces
+        PROMPT_COMMAND="${PROMPT_COMMAND%\;}" # remove trailing semi-colon
 
-    local new_entry="history -a; history -r"
-    case ";${PROMPT_COMMAND};" in
-      *";${new_entry};"*)
-        # echo "PROMPT_COMMAND already contains: $new_entry"
-        :;;
-      *)
-        PROMPT_COMMAND="${PROMPT_COMMAND};${new_entry}"
-        # echo "PROMPT_COMMAND does not contain: $new_entry"
-        ;;
-    esac
-  fi
+        local new_entry="history -a; history -r"
+        case ";${PROMPT_COMMAND};" in
+        *";${new_entry};"*)
+            # echo "PROMPT_COMMAND already contains: $new_entry"
+            :;;
+        *)
+            PROMPT_COMMAND="${PROMPT_COMMAND};${new_entry}"
+            # echo "PROMPT_COMMAND does not contain: $new_entry"
+            ;;
+        esac
+    fi
 
-}
-[[ "$BASH_VERSION" ]] && multi_shell_share_history
+    }
+    multi_shell_share_history
+fi
 
 export PATH="$HOME/bin:$HOME/user-software/bin:$PATH"
 
