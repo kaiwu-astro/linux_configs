@@ -1,6 +1,6 @@
 type emulate >/dev/null 2>/dev/null || alias emulate=true
 # sync: 
-# download once with wget -O ~/.bash_aliases https://gitee.com/kaiwu-astro/linux_configs/raw/main/.bash_aliases
+# download once with wget -O ~/.bash_aliases https://gitee.com/kaiwu-astro/linux_configs/raw/main/.bash_aliases && source ~/.bash_aliases
 # if not working, add source ~/.bash_aliases to ~/.profile
 # inner network machine: (ping -c 1 silk3 &> /dev/null && rsync silk3:~/.kai_config/ ~/ &> /dev/null &) 
 
@@ -8,10 +8,14 @@ _do_upgrade_bash_aliases() {
     if [ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> ~/.update_log; then 
         mkdir -p ~/.kai_config
         cd ~/.kai_config
-        rm -rf * >> ~/.update_log 2>&1 
-        wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip >> ~/.update_log 2>&1 
-        unzip -o kai_config.zip >> ~/.update_log 2>&1 
-        rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+        if [ "$(pwd)" == "$HOME/.kai_config" ]; then
+            rm -rf * >> ~/.update_log 2>&1 
+            wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip >> ~/.update_log 2>&1 
+            unzip -o kai_config.zip >> ~/.update_log 2>&1 
+            rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+        else
+            echo "Failed to change directory to ~/.kai_config" >> ~/.update_log 2>&1
+        fi
     fi
 }
 ((_do_upgrade_bash_aliases &> /dev/null &) &)
