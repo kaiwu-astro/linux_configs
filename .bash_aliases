@@ -18,7 +18,8 @@ _do_upgrade_bash_aliases() {
         fi
     fi
 }
-((_do_upgrade_bash_aliases &> /dev/null &) &)
+
+(_do_upgrade_bash_aliases &> /dev/null &)
 
 if [ -f ~/.bash_aliases_local ]; then
     . ~/.bash_aliases_local
