@@ -5,6 +5,8 @@ import subprocess
 from pathlib import Path
 import hashlib
 
+HEADERS = 'dirmd5,NBTime,rank,PE,N,Total,Inti.,Intgrt,Reg.,Irr.,Predall,Pred.,Init.B.,Mdot,Move,Comm.I.,Comm.R.,Send.I.,Send.R.,KS,Adjust,OUT,Barr.,Barr.P.,Barr.I.,Barr.R.,Reg.GPU.S,Reg.GPU.P,Comm.Adj.,Mdot.Fic.,Mdot.Fc.,Mdot.Pot.,Mdot.EC.,Sort.B.,HighV,KS.Init.B,KS.Int.S,KS.Int.P,KS.Comm.,KS.Barr.,KS.Move,KS.Cmb.,KS.Insert,KS.Init.,KS.Term.,Hiar.,KS.UP,KS.TP,TIDES3,GRRAD,xtsub1,xtsub2,xnirrf,xnpred,itides3,igrrad,jobid,node,mpi,gpu,other_labels'
+
 # Paths for output files
 home = Path.home()
 myr_file = home / ".myr.txt"
@@ -67,6 +69,7 @@ with time_file.open("w") as f:
 
 # Step 5: Combine the 3 parts into a CSV
 with open(output_file, "w") as out_f:
+    out_f.write(HEADERS + "\n")
     with myr_file.open() as myr_f, time_file.open() as time_f:
         for myr_line, time_line, md5 in zip(myr_f, time_f, simu_identifiers):
             out_f.write(f"{md5},{myr_line.strip()},{time_line.strip()}\n")
