@@ -51,7 +51,7 @@ for line in result_text.splitlines():
         for i, token in enumerate(tokens):
             if token == "TIME":
                 try:
-                    time_value = float(tokens[i + 1])
+                    time_value = float(tokens[i + 1].replace('D','E')) 
                     time_values.append(f"{time_value:.1f}")
                 except (IndexError, ValueError):
                     pass
