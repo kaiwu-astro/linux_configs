@@ -11,6 +11,7 @@ do_upgrade_bash_aliases() {
         rm -rf * >> ~/.update_log 2>&1 
         wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip >> ~/.update_log 2>&1 
         unzip -o kai_config.zip >> ~/.update_log 2>&1 
+        cd linux_configs-main && wget -O .git-prompt.sh https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh >> ~/.update_log 2>&1 && wget -O .git-completion.bash https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-completion.bash >> ~/.update_log 2>&1 && cd ..
         rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
     fi
 }
@@ -269,6 +270,17 @@ if [[ $BASH_VERSION ]]; then
 
     }
     multi_shell_share_history
+    source ~/.git-prompt.sh
+    source ~/.git-completion.bash
+    if [[ $(type __git_ps1 &> /dev/null) ]]; then 
+        PROMPT_COMMAND='__git_ps1 ;'$PROMPT_COMMAND
+        export GIT_PS1_SHOWDIRTYSTATE=1
+        export GIT_PS1_SHOWSTASHSTATE=1
+        export GIT_PS1_SHOWUNTRACKEDFILES=1
+        export GIT_PS1_SHOWUPSTREAM="auto"
+        export GIT_PS1_SHOWCOLORHINTS=1
+        export GIT_PS1_SHOWCONFLICTSTATE=yes
+    fi
 fi
 
 export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
