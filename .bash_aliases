@@ -220,7 +220,7 @@ count_latex(){
 }
 
 ##############
-# bashrc内容
+# 共享的bashrc内容
 if [[ $BASH_VERSION ]]; then
     ulimit -c 0
     ulimit -s unlimited
@@ -228,6 +228,19 @@ if [[ $BASH_VERSION ]]; then
     export HISTFILESIZE=5000
     export SAVEHIST=5000
     shopt -s histappend
+
+    [ -d $HOME/.bookmarks ] || mkdir $HOME/.bookmarks
+    if [ -d "$HOME/.bookmarks" ]; then
+        ## Usage:        bookmark @xxx : save current dir as @xxx
+        ##         go @xxx | goto @xxx : cd to the dir @xxx. 
+        ##        Can use tab completation goto @[tab]
+        export CDPATH=".:$HOME/.bookmarks:/"
+        alias goto="cd -P"
+        alias go="cd -P"
+        function bookmark {
+            ln -s "$(pwd)" "$HOME/.bookmarks/$1"
+        }
+    fi
 
     color_number=$(( 0x$(cat /etc/machine-id | cut -c 1-2) % 6 + 31))
     PS1='[\A]${debian_chroot:+($debian_chroot)}\[\033[01;${color_number}m\]\u@\h\[\033[00m\]:\[\033[01;${color_number}m\]\w\[\033[00m\]\$ '
