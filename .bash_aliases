@@ -235,7 +235,7 @@ if [[ $BASH_VERSION ]]; then
         ## Usage:        bookmark @xxx : save current dir as @xxx
         ##         go @xxx | goto @xxx : cd to the dir @xxx. 
         ##        Can use tab completation goto @[tab]
-        export CDPATH=".:$HOME/.bookmarks:/"
+        export CDPATH=".:$HOME/.bookmarks"
         alias goto="cd -P"
         alias go="cd -P"
         function bookmark {
