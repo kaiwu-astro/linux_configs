@@ -281,6 +281,7 @@ if [[ $BASH_VERSION ]]; then
         export GIT_PS1_SHOWCOLORHINTS=1
         export GIT_PS1_SHOWCONFLICTSTATE=yes
     fi
+    uptime | awk '/day/ { if ($3 < 10) print "系统上一次重启在 " $3 " 天前" }'
 fi
 
 export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
