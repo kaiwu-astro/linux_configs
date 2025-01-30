@@ -219,6 +219,17 @@ count_latex(){
         texcount `find . -name '*.tex' ` | sed -n '/Total/,$p' | less
     fi
 }
+shanxian() {
+    if [ "$#" -ne 2 ]; then
+        echo "Usage: shanxian <source> <target>"
+        return 1
+    fi
+    local source="$1"
+    local target="$2"
+    mv "$source" "$target"
+    ln -s "$target" "$source"
+    ls -lh "$source" "$target"
+}
 
 ##############
 # 共享的bashrc内容
