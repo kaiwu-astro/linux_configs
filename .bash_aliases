@@ -52,7 +52,7 @@ alias dff=$'df -BG | grepp -v "snap|run|sys|udev|tmpfs|efi" | awk \'{print $6,"\
 alias ddu='dutree -d1'
 alias lss='ls -alh'
 alias lls='lss'
-alias cp='cp -p'
+alias cp='cp --preserve=timestamps'
 alias cdo='cd $OLDPWD'
 alias tail1='tail -n 1'
 alias sl='ls'
