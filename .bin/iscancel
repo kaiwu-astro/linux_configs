@@ -7,7 +7,7 @@ def get_jobs():
     result = subprocess.run(["squeue", "--me"], capture_output=True, text=True)
     lines = result.stdout.strip().split("\n")
     if len(lines) < 2:
-        return [], []
+        return [], [], -1
     headers = lines[0].split()
     jobid_index = headers.index("JOBID")
     jobs = [line.split(maxsplit=len(headers) - 1) for line in lines[1:]]
@@ -40,8 +40,14 @@ def interactive_cancel(stdscr):
         key = stdscr.getch()
         if key == curses.KEY_UP and selected > 0:
             selected -= 1
+            headers, jobs, jobid_index = get_jobs()
+            if selected >= len(jobs):
+                selected = max(0, len(jobs) - 1)
         elif key == curses.KEY_DOWN and selected < len(jobs) - 1:
             selected += 1
+            headers, jobs, jobid_index = get_jobs()
+            if selected >= len(jobs):
+                selected = max(0, len(jobs) - 1)
         elif key in (ord('k'), ord('K'), ord('c'), ord('C')):
             job_id = jobs[selected][jobid_index]
             subprocess.run(["scancel", job_id])
@@ -50,6 +56,10 @@ def interactive_cancel(stdscr):
                 selected = max(0, len(jobs) - 1)
         elif key in (ord('q'), ord('Q')):
             break
+        else:
+            headers, jobs, jobid_index = get_jobs()
+            if selected >= len(jobs):
+                selected = max(0, len(jobs) - 1)
         
         stdscr.refresh()
 
