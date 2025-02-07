@@ -6,7 +6,7 @@ import sys
 # 方法：
 # 0. 读取文件。第一个参数为original_inp_file，第二个参数为manual.txt的路径，第三个参数(0或者1)为是否原位更改
 if len(sys.argv) < 3:
-    print('Usage: python3 inp_add_comments.py original_input manual.txt IsInplace')
+    print('Usage: inp_comment path_to_original_input path_to_manual_tex [is_inplace]')
     sys.exit(1)
 original_inp_file = sys.argv[1]
 manual_path = sys.argv[2]
@@ -15,7 +15,6 @@ new_inp_file = original_inp_file if is_inplace else original_inp_file+'.commente
 
 with open(original_inp_file, 'r') as f:
     lines = f.readlines()
-print(lines[-4:])
 # 1. 将KZ特殊处理。例如，将KZ(1:10)= 1 1 1 0 1 0 4 2 3 2 替换为KZ(1)=1, KZ(2)=1, KZ(3)=1, KZ(4)=0, KZ(5)=1, KZ(6)=0, KZ(7)=4, KZ(8)=2, KZ(9)=3, KZ(10)=2。一共有KZ(1:10), KZ(11:20), KZ(21:30), KZ(31:40), KZ(41:50)五行需要考虑
 def process_kz_line(line):
     match = re.match(r'KZ\((\d+):(\d+)\)=\s*(.*)', line)
