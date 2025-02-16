@@ -57,7 +57,7 @@ for line in one_variable_per_line:
         variable = match.group(1)
         n_comment_line_found = 0
         for i, manual_line in enumerate(manual_lines):
-            if manual_line.lower().startswith(variable.lower()):
+            if manual_line.lower().startswith(variable.lower()+' '):
                 commented_lines.append('! ' + manual_line)
                 n_comment_line_found += 1
                 for manual_line in manual_lines[i+1:]:

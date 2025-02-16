@@ -103,7 +103,13 @@ compress() {
     src="$1"
     dst="$src".tgz
     # nthread = number of total CPU threads
-    nthread=$(grep -c ^processor /proc/cpuinfo)
+    if [ -e /proc/cpuinfo ]; then
+        nthread=$(grep -c ^processor /proc/cpuinfo)
+    elif command -v systemctl >/dev/null 2>&1; then
+        nthread=$(sysctl -n hw.physicalcpu)
+    else
+        nthread=1
+    fi
     if [ $# == 2 ]; then dst="$2"; fi
     if [ $# == 3 ]; then nthread="$3"; fi
 
