@@ -308,6 +308,7 @@ export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
 
 ##############
 
+alias wdiff='git diff -U0 --word-diff --no-index --'
 alias lastjob='squeue -u $USER -o "%i" | sort | tail -n 2 | head -n 1'
 alias ipy='ipython3'
 alias ipython='ipython3'
