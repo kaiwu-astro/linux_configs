@@ -47,7 +47,6 @@ for line in processed_lines:
 # 查找方法：
 # 从key=value中获取key作为变量名
 # 对变量名，在manual中搜索第一个匹配（行开头为变量名）。然后继续往下搜，直到遇到下一个开头行不为空格、不为百分号的行。这中间的内容就是该变量的说明
-manual_path = '/p/scratch/madnuc/wu13/namelist_comment_test/manual.txt'
 with open(manual_path, 'r') as f:
     manual_lines = f.readlines()
 commented_lines = []
