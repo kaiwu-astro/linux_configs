@@ -62,7 +62,7 @@ for line in one_variable_per_line:
                 for manual_line in manual_lines[i+1:]:
                     if manual_line.strip().startswith('%'):
                         continue
-                    if manual_line.startswith(' '):
+                    if manual_line.startswith(' ') and not '\\texttt{if' in manual_line:
                         commented_lines.append('! ' + manual_line)
                         n_comment_line_found += 1
                     else:
