@@ -379,12 +379,13 @@ VZROT   & Z--velocity scaling factor (not used if VXROT = 0) \\
 RTIDE   & Unscaled tidal radius for KZ(14)=2 and KZ(22)$\ge$2. If not zero, RBAR = RT/RTIDE where RT[pc] is tidal radius calculated from input GMG and RG0\\
 \end{longtable}
 
+
 \hrule
 \noindent
 \begin{longtable}{@{}p{1.5cm}p{13.0cm}}
 \caption{\texttt{Input of \&XTRNL0, xtrnl0.F}}
 \label{table:indata}\\\hline
-& \texttt{if (kz(14)=2)} \\\hline
+       & \texttt{if (kz(14)=2)} \\\hline
 GMG    & Point-mass galaxy (solar masses, linearized tidel field in circular orbit) \\
 RG0    & Central distance (in kpc) \\\hline
        & \texttt{if (kz(14)=3)} \\\hline
@@ -397,13 +398,16 @@ RCIRC  & Central distance for VCIRC with logarithmic potential (kpc) \\
 GMB    & Dehnen model budge mass (solar masses)\\
 AR     & Dehnen model budge scaling radius (kpc)\\
 GAM    & Dehnen model budge profile power index gamma \\  
-RG     & Initial position; DISK+VCIRC=0, VG(3)=0: A(1+E)=RG(1), E=RG(2) \\
-VG     & Initial cluster velocity vector (km/sec) \\\hline
+RG(1:3) & Initial cluster position vector (kpc) \\
+VG(1:3) & Initial cluster velocity vector (km/s) \\\hline
        & \texttt{if (kz(14)=3,4)} \\\hline
 MP     & Total mass of Plummer sphere (in scaled units) \\
 AP     & Plummer scale factor (N-body units; square saved in AP2) \\
 MPDOT  & Decay time for gas expulsion (MP = MP0/(1 + MPDOT*(T-TD)) \\
-TDELAY & Delay time for starting gas expulsion (T > TDELAY) \\
+TDELAY & Delay time for starting gas expulsion (T > TDELAY) \\\hline
+       & \texttt{if (kz(14)=5)} \\\hline
+RG(1:3) & Initial cluster position vector (kpc) \\
+VG(1:3) & Initial cluster velocity vector (km/s) \\ 
 \end{longtable}
 
 \hrule
