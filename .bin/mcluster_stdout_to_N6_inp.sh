@@ -3,6 +3,13 @@
 # 文件名作为参数传入
 mcluster_stdout_file="$1"
 
+# 检查参数个数，少于1则输出用法
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <mcluster_stdout_file_path> [nb6_input]"
+    echo "  if nb6_input is provided, modify it inplace the extracted values"
+    exit 1
+fi
+
 # 检查文件是否存在
 if [[ ! -f "$mcluster_stdout_file" ]]; then
     echo "错误: 文件 $mcluster_stdout_file 不存在"
