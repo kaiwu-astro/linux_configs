@@ -24,8 +24,8 @@
 	ui = auto
 #[core]
 #	editor = subl
-[pull]
-	rebase = true
+# [pull]
+# 	rebase = true
 [init]
 	defaultBranch = main
 [credential "https://dev.azure.com"]
