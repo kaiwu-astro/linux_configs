@@ -327,3 +327,4 @@ alias git_update='git fetch --all && git reset --hard origin/dev '
 alias cls='clear'
 alias nb6cp="rsync -a --exclude-from=$HOME/.nb6cleanlist"
 alias nb6clean='for f in $(cat $HOME/.nb6cleanlist); do rm -f $f; done'
+alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
