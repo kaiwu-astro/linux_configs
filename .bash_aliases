@@ -243,7 +243,7 @@ shanxian() {
 ##############
 # 共享的bashrc内容
 if [[ $BASH_VERSION ]]; then
-    ulimit -c 0
+    stty -ixon # disable ctrl-s, ctrl-q, 这样ctrl+R可以用ctrl+S正向搜索
     ulimit -s unlimited
     export HISTSIZE=5000
     export HISTFILESIZE=5000
