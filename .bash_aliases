@@ -5,6 +5,10 @@ type emulate >/dev/null 2>/dev/null || alias emulate=true
 # inner network machine: (ping -c 1 silk3 &> /dev/null && rsync silk3:~/.kai_config/ ~/ &> /dev/null &) 
 
 do_upgrade_bash_aliases() {
+    emulate -L ksh
+    if $(cat /proc/$$/comm) == "zsh"; then
+        setopt localoptions rmstarsilent
+    fi
     if [ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> ~/.update_log; then 
         mkdir -p ~/.kai_config
         cd ~/.kai_config || { echo "Failed to change directory to ~/.kai_config" >> ~/.update_log 2>&1; return; }
