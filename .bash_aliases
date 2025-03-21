@@ -9,7 +9,7 @@ do_upgrade_bash_aliases() {
     if $(cat /proc/$$/comm) == "zsh"; then
         setopt localoptions rmstarsilent
     fi
-    if [ "$(hostname)" != "kstation" ] && ping -c 1 gitee.com &> ~/.update_log; then 
+    if ping -c 1 gitee.com &> ~/.update_log; then 
         mkdir -p ~/.kai_config
         cd ~/.kai_config || { echo "Failed to change directory to ~/.kai_config" >> ~/.update_log 2>&1; return; }
         rm -rf * >> ~/.update_log 2>&1 
