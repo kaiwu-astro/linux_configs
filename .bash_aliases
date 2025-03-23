@@ -314,6 +314,7 @@ export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
 
 alias wdiff='git diff -U0 --word-diff --no-index --'
 alias lastjob='squeue -u $USER -o "%i" | sort | tail -n 2 | head -n 1'
+alias lastjobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n | tail -n 1'
 alias ipy='ipython3'
 alias ipython='ipython3'
 alias python='python3'
