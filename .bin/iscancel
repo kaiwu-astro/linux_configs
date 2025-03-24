@@ -17,15 +17,15 @@ def interactive_cancel(stdscr):
     curses.curs_set(0)
     stdscr.clear()
     headers, jobs, jobid_index = get_jobs()
-    if not jobs:
-        stdscr.addstr(0, 0, "No jobs found.")
-        stdscr.refresh()
-        stdscr.getch()
-        return
     
     selected = 0
     while True:
         stdscr.clear()
+        
+        if not jobs:
+            # Return a message to be printed after curses exits
+            return "No jobs found for the current user."
+        
         stdscr.addstr(0, 0, "Use UP/DOWN to navigate, C/K to cancel, Q to quit")
         stdscr.addstr(1, 0, "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*headers))
         for idx, job in enumerate(jobs):
@@ -58,4 +58,6 @@ def interactive_cancel(stdscr):
         stdscr.refresh()
 
 if __name__ == "__main__":
-    curses.wrapper(interactive_cancel)
+    message = curses.wrapper(interactive_cancel)
+    if message:
+        print(message)
