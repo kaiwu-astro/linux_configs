@@ -43,7 +43,7 @@ fi
 # NBIN0=$(echo "$NBIN0_values" | awk '{sum += $1} END {print sum}')
 
 # 提取新的 ZMBAR
-total_mass=$(grep -oP "Total mass: \K[0-9]+" "$mcluster_stdout_file" | awk '{sum += $1} END {print sum}')
+total_mass=$(grep -oP "Total mass \K[0-9]+.*[0-9]*" "$mcluster_stdout_file")
 total_stars=$(grep -oP "Total mass: [0-9]+\s+\(\K[0-9]+" "$mcluster_stdout_file" | awk '{sum += $1} END {print sum}')
 ZMBAR=$(awk "BEGIN {print $total_mass / $total_stars}")
 
