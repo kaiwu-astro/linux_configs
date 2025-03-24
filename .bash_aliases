@@ -261,7 +261,7 @@ if [[ $BASH_VERSION ]]; then
         ##        Can use tab completation goto @[tab]
         export CDPATH=".:$HOME/.bookmarks"
         alias goto="cd -P"
-        alias go="cd -P"
+        complete -F _cd goto
         function bookmark {
             ln -s "$(pwd)" "$HOME/.bookmarks/$1"
         }
