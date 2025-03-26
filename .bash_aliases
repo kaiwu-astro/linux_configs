@@ -336,3 +336,4 @@ alias cls='clear'
 alias nb6cp="rsync -a --exclude-from=$HOME/.nb6cleanlist"
 alias nb6clean='for f in $(cat $HOME/.nb6cleanlist); do rm -f $f; done'
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
+alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
