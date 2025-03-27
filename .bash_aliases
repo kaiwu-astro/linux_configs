@@ -15,6 +15,7 @@ do_upgrade_bash_aliases() {
         rm -rf * >> ~/.update_log 2>&1 
         wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip >> ~/.update_log 2>&1 
         unzip -o kai_config.zip >> ~/.update_log 2>&1 
+        rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
         cd linux_configs-main 
         wget -O .git-prompt.sh https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh >> ~/.update_log 2>&1 && wget -O .git-completion.bash https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-completion.bash >> ~/.update_log 2>&1 
         cp --preserve=timestamps /usr/share/bash-completion/completions/git .git-completion.bash >> ~/.update_log 2>&1 && cp --preserve=timestamps /etc/bash_completion.d/git-prompt .git-prompt.sh >> ~/.update_log 2>&1
