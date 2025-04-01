@@ -17,8 +17,12 @@ do_upgrade_bash_aliases() {
         unzip -o kai_config.zip >> ~/.update_log 2>&1 
         rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
         cd linux_configs-main 
-        wget -O .git-prompt.sh https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-prompt.sh >> ~/.update_log 2>&1 && wget -O .git-completion.bash https://raw.githubusercontent.com/git/git/refs/heads/master/contrib/completion/git-completion.bash >> ~/.update_log 2>&1 
-        cp --preserve=timestamps /usr/share/bash-completion/completions/git .git-completion.bash >> ~/.update_log 2>&1 && cp --preserve=timestamps /etc/bash_completion.d/git-prompt .git-prompt.sh >> ~/.update_log 2>&1
+        if [ -f /usr/share/bash-completion/completions/git ]; then
+            cp --preserve=timestamps /usr/share/bash-completion/completions/git .git-completion.bash >> ~/.update_log 2>&1
+        fi
+        if [ -f /etc/bash_completion.d/git-prompt ]; then
+            cp --preserve=timestamps /etc/bash_completion.d/git-prompt .git-prompt.sh >> ~/.update_log 2>&1
+        fi
         cd ..
         rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
     fi
@@ -315,9 +319,23 @@ export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
 
 alias wdiff='git diff -U0 --word-diff --no-index --'
 alias lastjob='squeue -u $USER -o "%i" | sort | tail -n 2 | head -n 1'
-alias lastjobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n | tail -n 1'
-alias firstjobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n | head -n 1'
 alias jobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n'
+lastjobhere() {
+    emulate -L ksh
+    local n=1
+    if [[ "$1" == "-n" && "$2" =~ ^[0-9]+$ ]]; then
+        n=$2
+    fi
+    jobhere | tac | sed -n "${n}p"
+}
+firstjobhere() {
+    emulate -L ksh
+    local n=1
+    if [[ "$1" == "-n" && "$2" =~ ^[0-9]+$ ]]; then
+        n=$2
+    fi
+    jobhere | sed -n "${n}p"
+}
 alias lastj='lastjobhere'
 alias firstj='firstjobhere'
 alias ipy='ipython3'
