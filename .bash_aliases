@@ -68,7 +68,10 @@ alias cp='cp --preserve=timestamps'
 alias cdo='cd $OLDPWD'
 alias tail1='tail -n 1'
 alias sl='ls'
-
+mymem() {
+    emulate -L ksh
+    ps -u $USER -o rss= | awk '{sum+=$1} END {printf "%.2f GB\n", sum/1024/1024}'
+}
 cdd() {
     local dir="$1"
     local dir="${dir:=$HOME}"
@@ -176,9 +179,16 @@ hold() {
     done
 }
 
-# alias make_ffmpeg_list="ls -1 *.jpg | sort -t_ -k2 -n | sed \"s/^/file '/\" | sed \"s/$/'/\" > list.txt"
 make_ffmpeg_list() {
-    local key=2
+    # example:
+    #     many files with name like 
+    #       dragon3_1m_5hb_ttot_33.375_mass.jpg 
+    #       dragon3_1m_5hb_ttot_6.0_mass.jpg 
+    #     number is the 5th field, then do
+    #     ls *.jpg | make_ffmpeg_list -k 5
+    # output: 
+    #     list.txt
+    local key=2 # default value for -k
     while getopts k: flag
     do
         case "${flag}" in
@@ -191,10 +201,8 @@ make_ffmpeg_list() {
 }
 make_video() {
     emulate -L ksh
-    # if [ "$#" -eq 0 ]; then
-    # if -h or --help is passed as an argument, print usage and return
     if [ "$#" -eq 1 ] && [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-        echo "Usage: make_video <output_filename> <bitrate> <codec: h264|h265>"
+        echo "Usage: make_video <output_filename=output.mp4> <bitrate=750k> <codec=h265>"
         return 0
     fi
     local output_filename="output.mp4"
@@ -227,7 +235,7 @@ make_video() {
         vtag="hvc1"
     fi
 
-    ffmpeg -hwaccel cuda -r 30 -f concat -safe 0 -i list.txt -b:v "$bitrate" -c:v "$encoder" -an -pix_fmt yuv420p -vtag "$vtag" -preset fast -movflags +faststart "$output_filename"
+    ffmpeg -hwaccel cuda -r 30 -f concat -safe 0 -i list.txt -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -b:v "$bitrate" -c:v "$encoder" -an -pix_fmt yuv420p -vtag "$vtag" -preset fast -movflags +faststart "$output_filename"
 }
 count_latex(){
     emulate -L ksh
