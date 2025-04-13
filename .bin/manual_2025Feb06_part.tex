@@ -10,13 +10,10 @@ KSTART  & Run control index\\
         & =2: restart/continuation of a run, needs \texttt{comm.1}\footnote{the user should create a comm.1 file by copy-pasting the comm.2\_X, where X is the wanted NBU time value to restart the run. Notice that the same applies to KSTART $>$ 2; notice also that \\
         \texttt{cp -p `ls -rt comm.2* | tail -1` comm.1} \\
         is a nice unix way to automatically copy the last comm.2 to comm.1 }\\
-        & =3: \textcolor{red}{now obsolete}. Old function with old input file: restart + changes of: \\ & DTADJ, DELTAT, TADJ, TNEXT, TCRIT, QE, J, KZ(J), NCOMM\\
-        & =4: \textcolor{red}{now obsolete}. Old function with old input file: restart + changes of: \\ & ETAI, ETAR, ETAU, DTMIN, RMIN, NCRIT, NNBOPT, SMAX, GMIN, GMAX\\
-        & =5: \textcolor{red}{now obsolete}. Old function with old input file: restart containing the combination of the control index 3 and 4\\
 %
 TCOMP   & Maximum wall-clock time in seconds (parallel runs: wall clock)\\
 %
-TCRTP0 & Termination time in Myr \\
+TCRTP0  & Termination time in Myr \\
 %
 isernb  & For MPI parallel runs: only irregular block sizes larger than
           this value are executed in parallel mode
@@ -45,7 +42,7 @@ NRAND   & Random number seed; any positive integer \\
 %          (< LMAX$-$5) set in \texttt{params.h}\\
 NNBOPT  & Desired optimal neighbour number (< LMAX$-$5)\\ %(R.Sp.)
 NRUN    & Run identification index\\
-NCOMM   & Multiplicator for frequency to store the dumping data (mydump); basic frequency determined by DELTAT \\
+NCOMM   & Multiplicator for frequency to store the dumping data (mydump); positive integer; basic frequency determined by DELTAT \\
 \end{longtable}
 
 \hrule
@@ -146,7 +143,8 @@ KZ(14)  & External tidal force \\
         & $=2$: point-mass galaxy with circular orbit (extra input) \\
         & $=3$: point-mass + disk + halo + Plummer (extra input) \\
         & $=4$: Plummer model (extra input) \\
-        & \textcolor{red}{Namelist input has all fields for values 2,3,4, but user must take care to put proper values} \\
+        & $=5$: Milky-Way potential (extra input) based on Galpy package (Bovy, 2015) \\
+        & Note: Namelist input has all fields for values 2,3,4, but user must take care to put proper values \\
 KZ(15)  & Triple, quad, chain and merger search \\
         & $\ge 1$: Switch on triple, quad, chain (KZ(30)>0) and merger search (\texttt{impact.f}) \\
         & $\ge 2$: Diagnostics at main output at begin and end of triple, quad \\
@@ -379,7 +377,6 @@ VZROT   & Z--velocity scaling factor (not used if VXROT = 0) \\
 RTIDE   & Unscaled tidal radius for KZ(14)=2 and KZ(22)$\ge$2. If not zero, RBAR = RT/RTIDE where RT[pc] is tidal radius calculated from input GMG and RG0\\
 \end{longtable}
 
-
 \hrule
 \noindent
 \begin{longtable}{@{}p{1.5cm}p{13.0cm}}
@@ -398,16 +395,16 @@ RCIRC  & Central distance for VCIRC with logarithmic potential (kpc) \\
 GMB    & Dehnen model budge mass (solar masses)\\
 AR     & Dehnen model budge scaling radius (kpc)\\
 GAM    & Dehnen model budge profile power index gamma \\  
-RG(1:3) & Initial cluster position vector (kpc) \\
-VG(1:3) & Initial cluster velocity vector (km/s) \\\hline
+RG(1:3) & Initial cluster position vector (kpc); DISK+VCIRC=0, VG(3)=0: A(1+E)=RG(1), E=RG(2) . Note that upon restart, RG is not read from input; saved value is used instead.\\
+VG(1:3) & Initial cluster velocity vector (km/s). Note that upon restart, VG is not read from input; saved value is used instead. \\\hline
        & \texttt{if (kz(14)=3,4)} \\\hline
 MP     & Total mass of Plummer sphere (in scaled units) \\
 AP     & Plummer scale factor (N-body units; square saved in AP2) \\
 MPDOT  & Decay time for gas expulsion (MP = MP0/(1 + MPDOT*(T-TD)) \\
 TDELAY & Delay time for starting gas expulsion (T > TDELAY) \\\hline
        & \texttt{if (kz(14)=5)} \\\hline
-RG(1:3) & Initial cluster position vector (kpc) \\
-VG(1:3) & Initial cluster velocity vector (km/s) \\ 
+RG(1:3) & Initial cluster position vector (kpc) . Note that upon restart, RG is not read from input; saved value is used instead.\\
+VG(1:3) & Initial cluster velocity vector (km/s). Note that upon restart, VG is not read from input; saved value is used instead. \\ 
 \end{longtable}
 
 \hrule
@@ -416,8 +413,8 @@ VG(1:3) & Initial cluster velocity vector (km/s) \\
 \caption{\texttt{Input of \&INBINPOP, binpop.F, \\\phantom{xxxxxxxx}if (kz(8)=1 or kz(8)>2)}}
 \label{table:inbinpop}\\\hline
 %
-SEMI   & Initial semi-major axis limit\\
-ECC    & Initial eccentricity \\
+SEMI0   & Initial semi-major axis limit\\
+ECC0    & Initial eccentricity \\
         & $<0$: thermal distribution, $f(e)=2e$ \\
         & $\ge 0$ and $\le 1$: fixed value of eccentricity\\
         & $=20$: uniform distribution \\
@@ -445,18 +442,6 @@ RANGE &  Range in SEMI for uniform logarithmic distribution ($> 0$) \\
 
 \hrule
 \noindent
-
-
-%\hrule
-%\noindent
-%\begin{longtable}{@{}p{1.5cm}p{13.0cm}}
-%\texttt{intide.F:}& \texttt{if (kz(27)>0)} (currently suppressed)
-%RSTAR &  Size of typical star in A.U. \\
-%IMS   &  # idealized main-sequence stars \\
-%IEV   &  # idealized evolved stars \\
-%RMS   &  Scale factor for main-sequence radii (>0: fudge factor) \\
-%REV   &  Scale factor for evolved radii (initial size RSTAR)\\
-%\end{longtable}
 
 \hrule
 \noindent
