@@ -137,3 +137,4 @@ mass_bh.27*
 *.o
 LPS_*
 core*
+config.log*
