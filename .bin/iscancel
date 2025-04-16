@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import curses
 import subprocess
+import sys
 
 def get_jobs():
     """获取当前用户的 Slurm 任务列表，并解析出字段。"""
@@ -58,6 +59,9 @@ def interactive_cancel(stdscr):
         stdscr.refresh()
 
 if __name__ == "__main__":
+    if sys.version_info < (3, 7):
+        print("Python version >= 3.7 is required.")
+        sys.exit(1)
     message = curses.wrapper(interactive_cancel)
     if message:
         print(message)
