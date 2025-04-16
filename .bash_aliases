@@ -307,8 +307,8 @@ if [[ $BASH_VERSION ]]; then
 
     }
     multi_shell_share_history
-    source ~/.git-prompt.sh
-    source ~/.git-completion.bash
+    [ -f ~/.git-prompt.sh ] && source ~/.git-prompt.sh
+    [ -f ~/.git-completion.bash ] && source ~/.git-completion.bash
     if [[ $(type __git_ps1 &> /dev/null) ]]; then 
         PROMPT_COMMAND='__git_ps1 ;'$PROMPT_COMMAND
         export GIT_PS1_SHOWDIRTYSTATE=1
