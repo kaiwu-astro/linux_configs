@@ -137,6 +137,6 @@ bh_dat.31*
 mass_bh.27*
 *.o
 LPS_*
-core*
+core.*.*
 config.log*
 TDE.98*
