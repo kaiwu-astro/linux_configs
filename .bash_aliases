@@ -70,7 +70,29 @@ alias tail1='tail -n 1'
 alias sl='ls'
 mymem() {
     emulate -L ksh
-    ps -u $USER -o rss= | awk '{sum+=$1} END {printf "%.2f GB\n", sum/1024/1024}'
+    
+    # 默认刷新间隔为2秒
+    local interval=2
+    local live=false
+    
+    # 手动解析参数，避免getopts的限制
+    if [[ "$1" == "-l" ]]; then
+        live=true
+        # 检查是否有第二个参数，并且是数字
+        if [[ -n "$2" && "$2" =~ ^[0-9]+$ ]]; then
+            interval=$2
+        fi
+    elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        echo "用法: mymem [-l [X]]，其中X是刷新间隔(默认为2秒)"
+        return 0
+    fi
+    
+    # 如果启用了实时更新，则使用watch命令
+    if $live; then
+        watch -n $interval "ps -u $USER -o rss= | awk '{sum+=\$1} END {printf \"%.2f GB\\n\", sum/1024/1024}'"
+    else
+        ps -u $USER -o rss= | awk '{sum+=$1} END {printf "%.2f GB\n", sum/1024/1024}'
+    fi
 }
 cdd() {
     local dir="$1"
@@ -124,6 +146,10 @@ compress() {
     fi
     if [ $# == 2 ]; then dst="$2"; fi
     if [ $# == 3 ]; then nthread="$3"; fi
+
+    if [[ "$(uname -s)" == Darwin ]]; then
+        du='gdu'
+    fi
 
     if command -v pv >/dev/null 2>&1; then 
         tar c $src | pv -s $(du -sb $src | awk '{print $1}') | pigz -6 -p $nthread > $dst
@@ -364,4 +390,4 @@ alias nb6cp="rsync -a --exclude-from=$HOME/.nb6cleanlist"
 alias nb6clean='for f in $(cat $HOME/.nb6cleanlist); do rm -f $f; done'
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
-alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completion ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
+alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
