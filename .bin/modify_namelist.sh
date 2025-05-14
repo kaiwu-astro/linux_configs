@@ -1,21 +1,21 @@
 #!/bin/bash
 
 # Script to modify a value in a Fortran NAMELIST file
-# Usage: ./modify_namelist.sh <namelist_file> <namelist_name> <key> <new_value> <dst>
+# Usage: ./modify_namelist.sh <namelist_file> <key> <new_value> [dst]
 
 # Check for required arguments
-if [ "$#" -lt 4 ]; then
+if [ "$#" -lt 3 ]; then
     echo "Only get $# arguments"
-    echo "Usage: $0 <namelist_file> <namelist_name> <key> <new_value> [dst]"
+    echo "Usage: $0 <namelist_file> <key> <new_value> [dst]"
+    echo "Example: $0 N1m.inp N 20000 inplace"
     exit 1
 fi
 
 NAMELIST_FILE=$1
-NAMELIST_NAME=$2
-KEY=$3
-NEW_VALUE=$4
-if [ "$#" -eq 5 ]; then
-    DST=$5
+KEY=$2
+NEW_VALUE=$3
+if [ "$#" -eq 4 ]; then
+    DST=$4
     if [ "$DST" == "inplace" ]; then
         DST=$NAMELIST_FILE
     fi
@@ -32,16 +32,11 @@ fi
 # Create a temporary file to store the modified content
 TEMP_FILE=$(mktemp)
 
-# Use awk to process the NAMELIST and update the key value
-awk -v namelist="&$NAMELIST_NAME" \
-    -v key="$KEY" \
+# Use awk to process the file and update the key value globally
+awk -v key="$KEY" \
     -v new_value="$NEW_VALUE" \
-    'BEGIN {inside_namelist = 0} \
-    {
-        if ($0 ~ "^" namelist) {
-            inside_namelist = 1
-        }
-        if (inside_namelist && $0 ~ key "[ \t]*=") {
+    '{
+        if ($0 ~ "(^|,[ \t]*)"key"[ \t]*=") {
             if (new_value ~ /^[+-]/) {
                 # More portable extraction of value that works in both mawk and GNU awk
                 gsub(/^.*=[ \t]*/, "", $0)  # Remove everything up to and including =
@@ -54,14 +49,11 @@ awk -v namelist="&$NAMELIST_NAME" \
                 sub(key "[ \t]*=[ \t]*[^,]*", key "=" new_value)
             }
         }
-        if (inside_namelist && $0 ~ "/") {
-            inside_namelist = 0
-        }
         print $0
     }' "$NAMELIST_FILE" > "$TEMP_FILE"
 
 # Replace the original file with the modified content
 diff --color "$NAMELIST_FILE" "$TEMP_FILE" 2>&1 && true || true
 mv "$TEMP_FILE" $DST
-echo "Updated $KEY in $NAMELIST_NAME to $NEW_VALUE."
+echo "Updated $KEY to $NEW_VALUE."
 exit
