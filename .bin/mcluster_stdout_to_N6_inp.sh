@@ -34,11 +34,9 @@ NBIN0_values=$(grep -oE "Creating [0-9]+ primordial binary systems" "$mcluster_s
 
 # Check if grep result is empty (no binary systems found)
 if [[ -z "$NBIN0_values" ]]; then
-    echo "Warning: No 'Creating primordial binary systems' found, setting NBIN0=0"
     NBIN0=0
 else
     NBIN0_count=$(echo "$NBIN0_values" | wc -l)
-    
     if [[ $NBIN0_count -gt 1 ]]; then
         echo "Warning: multiple 'Creating [0-9]+ primordial binary systems' items found:"
         echo "$NBIN0_values"
@@ -53,9 +51,11 @@ fi
 total_mass=$(grep -oP "Total mass \K[0-9]+.*[0-9]*" "$mcluster_stdout_file")
 total_stars=$(grep -oP "Total mass: [0-9]+.*[0-9]*\s+\(\K[0-9]+" "$mcluster_stdout_file" | awk '{sum += $1} END {print sum}')
 ZMBAR=$(awk "BEGIN {print $total_mass / $total_stars}")
+N=$total_stars
 
 # 打印结果
 cat <<EOF
+N=$N
 NRAND=$NRAND
 RBAR=$RBAR
 RMIN=$RMIN
@@ -77,6 +77,7 @@ if [[ $# -eq 2 ]]; then
             modify_namelist.sh "$nb6_input" "*" "$key" "$value" inplace
         fi
     done < <(cat <<EOF
+N=$N
 NRAND=$NRAND
 RBAR=$RBAR
 RMIN=$RMIN
