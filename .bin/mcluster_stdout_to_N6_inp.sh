@@ -30,30 +30,28 @@ RMIN='1.0E-05' # about 5 au
 ZMET=$(grep -m 1 "Setting up stellar population with Z =" "$mcluster_stdout_file" | awk -F "= " '{print $2}' | sed 's/\.$//')
 
 # 提取 NBIN0
-if grep -oE "Creating [0-9]+ primordial binary systems" "$mcluster_stdout_file" &> /dev/null; then
-    # 如果有匹配项，提取数字
-    NBIN0_values=$(grep -oE "Creating [0-9]+ primordial binary systems" "$mcluster_stdout_file" | grep -oE "[0-9]+")
-    # Only count non-empty lines
-    NBIN0_count=$(echo "$NBIN0_values" | grep -v '^$' | wc -l)
+NBIN0_values=$(grep -oE "Creating [0-9]+ primordial binary systems" "$mcluster_stdout_file" | grep -oE "[0-9]+")
+
+# Check if grep result is empty (no binary systems found)
+if [[ -z "$NBIN0_values" ]]; then
+    echo "Warning: No 'Creating primordial binary systems' found, setting NBIN0=0"
+    NBIN0=0
+else
+    NBIN0_count=$(echo "$NBIN0_values" | wc -l)
     
     if [[ $NBIN0_count -gt 1 ]]; then
         echo "Warning: multiple 'Creating [0-9]+ primordial binary systems' items found:"
         echo "$NBIN0_values"
         NBIN0=$(echo "$NBIN0_values" | head -n 1)
     else
-        NBIN0=$NBIN0_values
+        NBIN0=$(echo "$NBIN0_values")
     fi
-else
-    # 如果没有匹配项，设置 NBIN0 为 0
-    echo "Warning: No 'Creating primordial binary systems' found, setting NBIN0=0"
-    NBIN0=0
 fi
-
 # NBIN0=$(echo "$NBIN0_values" | awk '{sum += $1} END {print sum}')
 
 # 提取新的 ZMBAR
 total_mass=$(grep -oP "Total mass \K[0-9]+.*[0-9]*" "$mcluster_stdout_file")
-total_stars=$(grep -oP "Total mass: [0-9]+\s+\(\K[0-9]+" "$mcluster_stdout_file" | awk '{sum += $1} END {print sum}')
+total_stars=$(grep -oP "Total mass: [0-9]+.*[0-9]*\s+\(\K[0-9]+" "$mcluster_stdout_file" | awk '{sum += $1} END {print sum}')
 ZMBAR=$(awk "BEGIN {print $total_mass / $total_stars}")
 
 # 打印结果
