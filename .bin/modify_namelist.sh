@@ -43,8 +43,10 @@ awk -v namelist="&$NAMELIST_NAME" \
         }
         if (inside_namelist && $0 ~ key "[ \t]*=") {
             if (new_value ~ /^[+-]/) {
-                match($0, key "[ \t]*=[ \t]*([^,]*)", m)
-                original_value = m[1] + 0  # Convert to numeric
+                # More portable extraction of value that works in both mawk and GNU awk
+                gsub(/^.*=[ \t]*/, "", $0)  # Remove everything up to and including =
+                gsub(/[ \t]*,.*$/, "", $0)  # Remove trailing comma and anything after
+                original_value = $0 + 0  # Convert to numeric
                 adjustment = new_value + 0 # Convert to numeric
                 updated_value = original_value + adjustment
                 sub(key "[ \t]*=[ \t]*[^,]*", key "=" updated_value)
