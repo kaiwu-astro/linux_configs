@@ -74,7 +74,7 @@ if [[ $# -eq 2 ]]; then
         if [[ $line =~ ^(.+)=(.+)$ ]]; then
             key="${BASH_REMATCH[1]}"
             value="${BASH_REMATCH[2]}"
-            modify_namelist.sh "$nb6_input" "*" "$key" "$value" inplace
+            modify_namelist.sh "$nb6_input" "$key" "$value" inplace
         fi
     done < <(cat <<EOF
 N=$N
