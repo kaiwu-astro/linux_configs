@@ -36,7 +36,10 @@ TEMP_FILE=$(mktemp)
 awk -v key="$KEY" \
     -v new_value="$NEW_VALUE" \
     '{
-        if ($0 ~ "(^|,[ \t]*)"key"[ \t]*=") {
+        # Skip comment lines that start with whitespace followed by exclamation mark
+        if ($0 ~ /^[ \t]*!/) {
+            # skip
+        } else if ($0 ~ "(^|,[ \t]*)"key"[ \t]*=") {
             if (new_value ~ /^[+-]/) {
                 # More portable extraction of value that works in both mawk and GNU awk
                 gsub(/^.*=[ \t]*/, "", $0)  # Remove everything up to and including =
