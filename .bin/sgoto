@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# 检查是否提供了 jobid 参数
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <jobid>"
+    exit 1
+fi
+
+# 获取 jobid 参数
+jobid=$1
+
+# 执行 srun 命令
+srun --overlap --jobid="$jobid" --pty /bin/bash -i
+
