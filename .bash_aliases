@@ -391,3 +391,25 @@ alias nb6clean='bash -c '\''for f in $(cat $HOME/.nb6cleanlist); do rm -f $f; do
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
 alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
+get_zoxide() {
+    temp_dir=$(mktemp -d) && cd "$temp_dir" && \
+    wget https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.7/zoxide-0.9.7-x86_64-unknown-linux-musl.tar.gz && \
+    tar -xvf zoxide-0.9.7-x86_64-unknown-linux-musl.tar.gz && \
+    mkdir -p ~/user-software/bin && \
+    cp -p zoxide ~/user-software/bin/ && \
+    cd - > /dev/null && rm -rf "$temp_dir" && \
+    shellname=`basename "$(readlink /proc/$$/exe)"` && \
+    _cmd='eval "$(zoxide init --cmd cd '"$shellname"')"'
+    echo $_cmd >> ~/.${shellname}rc
+}
+get_fzf() {
+    temp_dir=$(mktemp -d) && cd "$temp_dir" && \
+    wget https://github.com/junegunn/fzf/releases/download/v0.62.0/fzf-0.62.0-linux_amd64.tar.gz && \
+    tar -xvf fzf-0.62.0-linux_amd64.tar.gz && \
+    mkdir -p ~/user-software/bin && \
+    cp -p fzf ~/user-software/bin/ && \
+    cd - > /dev/null && rm -rf "$temp_dir" && \
+    shellname=`basename "$(readlink /proc/$$/exe)"` && \
+    _cmd='source <(fzf --'"$shellname"')'
+    echo $_cmd >> ~/.${shellname}rc
+}
