@@ -413,3 +413,4 @@ get_fzf() {
     _cmd='source <(fzf --'"$shellname"')'
     echo $_cmd >> ~/.${shellname}rc
 }
+alias cdabs='cd $(readlink -f .)'
