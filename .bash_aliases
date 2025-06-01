@@ -144,7 +144,7 @@ compress() {
     else
         nthread=1
     fi
-    if [ $# == 2 ]; then dst="$2"; fi
+    if [ $# -gt 1 ]; then dst="$2"; fi
     if [ $# == 3 ]; then nthread="$3"; fi
 
     if [[ "$(uname -s)" == Darwin ]]; then
