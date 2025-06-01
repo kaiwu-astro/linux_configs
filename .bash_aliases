@@ -413,4 +413,15 @@ get_fzf() {
     _cmd='source <(fzf --'"$shellname"')'
     echo $_cmd >> ~/.${shellname}rc
 }
+get_pv() {
+    _oldpwd=$(pwd)
+    temp_dir=$(mktemp -d) && cd "$temp_dir" && \
+    curl -O https://ivarch.com/s/pv-1.9.31.tar.gz && \
+    tar xzf pv-1.9.31.tar.gz && \
+    cd pv-1.9.31 && \
+    mkdir -p $HOME/user-software && \
+    sh ./configure --prefix=$HOME/user-software && \
+    make -j 4 && make install && \
+    cd $_oldpwd > /dev/null && rm -rf "$temp_dir"
+}
 alias cdabs='cd $(readlink -f .)'
