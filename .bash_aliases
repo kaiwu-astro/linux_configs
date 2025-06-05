@@ -211,9 +211,9 @@ make_ffmpeg_list() {
     #       dragon3_1m_5hb_ttot_33.375_mass.jpg 
     #       dragon3_1m_5hb_ttot_6.0_mass.jpg 
     #     number is the 5th field, then do
-    #     ls *.jpg | make_ffmpeg_list -k 5
+    #     ls *.jpg | make_ffmpeg_list -k 5 > list.txt
     # output: 
-    #     list.txt
+    #     stdout
     local key=2 # default value for -k
     while getopts k: flag
     do
@@ -223,7 +223,7 @@ make_ffmpeg_list() {
     done
     shift $((OPTIND -1))
 
-    sort -t_ -k${key} -n | sed "s/^/file '/" | sed "s/$/'/" > list.txt
+    sort -t_ -k${key} -n | sed "s/^/file '/" | sed "s/$/'/"
 }
 make_video() {
     emulate -L ksh
@@ -261,7 +261,7 @@ make_video() {
         vtag="hvc1"
     fi
 
-    ffmpeg -hwaccel cuda -r 30 -f concat -safe 0 -i list.txt -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -b:v "$bitrate" -c:v "$encoder" -an -pix_fmt yuv420p -vtag "$vtag" -preset fast -movflags +faststart "$output_filename"
+    ffmpeg -hwaccel cuda -hwaccel_output_format cuda -r 30 -f concat -safe 0 -i list.txt -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -b:v "$bitrate" -c:v "$encoder" -an -pix_fmt yuv420p -vtag "$vtag" -preset fast -movflags +faststart "$output_filename"
 }
 count_latex(){
     emulate -L ksh
