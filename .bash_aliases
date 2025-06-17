@@ -6,7 +6,7 @@ type emulate >/dev/null 2>/dev/null || alias emulate=true
 
 do_upgrade_bash_aliases() {
     emulate -L ksh
-    if $(cat /proc/$$/comm) == "zsh"; then
+    if [[ $ZSH_VERSION ]]; then
         setopt localoptions rmstarsilent
     fi
     if ping -c 1 gitee.com &> ~/.update_log; then 
@@ -284,6 +284,10 @@ shanxian() {
 }
 
 ##############
+if [[ $ZSH_VERSION ]]; then
+    bindkey \^U backward-kill-line
+fi
+
 # 共享的bashrc内容
 if [[ $BASH_VERSION ]]; then
     stty -ixon # disable ctrl-s, ctrl-q, 这样ctrl+R可以用ctrl+S正向搜索
