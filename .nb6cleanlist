@@ -140,3 +140,6 @@ LPS_*
 core.*.*
 config.log*
 TDE.98*
+data.*
+dump_merger.*
+input.par*
