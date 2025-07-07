@@ -391,7 +391,7 @@ alias galevclean='rm spec_out*; rm stellar_magnitude*; rm log_GalevNB*; rm fort.
 alias git_update='git fetch --all && git reset --hard origin/dev '
 alias cls='clear'
 alias nb6cp="rsync -a --exclude-from=$HOME/.nb6cleanlist"
-alias nb6clean='bash -c '\''for f in $(cat $HOME/.nb6cleanlist); do rm -f $f; done'\'
+alias nb6clean='rm -f $(tr "\n" " " < "$HOME/.nb6cleanlist")'
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
 alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
