@@ -429,3 +429,19 @@ get_pv() {
     cd $_oldpwd > /dev/null && rm -rf "$temp_dir"
 }
 alias cdabs='cd $(readlink -f .)'
+get_btop() {
+    if nvidia-smi &> /dev/null; then
+        echo "Detected nvidia-smi, using btop with GPU support"
+    else
+        echo "No nvidia-smi detected, press enter to continue or Ctrl+C to cancel"
+        read -r
+        echo "Installing btop without GPU support"
+    fi
+    temp_dir=$(mktemp -d) && cd "$temp_dir" && \
+    wget https://github.com/aristocratos/btop/releases/latest/download/btop-x86_64-linux-musl.tbz && \
+    tar -xvf btop-x86_64-linux-musl.tbz && \
+    cd btop && \
+    mkdir -p ~/user-software && \
+    make install PREFIX=$HOME/user-software && \
+    cd ~ > /dev/null && rm -rf "$temp_dir"
+}
