@@ -447,6 +447,8 @@ get_btop() {
 }
 get_petar() {
     cat << 'EOT' > $HOME/install_petar.sh
+#!/bin/bash
+set -ex
 module --force purge
 module load Stages/2025 GCC HDF5/1.14.5-serial ParaStationMPI GSL git IPython
 # alternatively, module load Stages/2024 GCC HDF5/1.14.2-serial ParaStationMPI GSL/2.7 git IPython/8.14.0
@@ -458,6 +460,8 @@ cd FDPS && git checkout v7.0 && cd ..
 git clone https://github.com/lwang-astro/SDAR
 cd PeTar
 installation_dir="$HOME/user-software"
+# installation_dir=`mktemp -d`
+echo $installation_dir
 ./configure --prefix=$installation_dir --enable-cuda --with-interrupt=bse --with-external=galpy
 make -j 10 && make install
 EOT
