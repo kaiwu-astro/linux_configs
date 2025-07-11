@@ -9,23 +9,27 @@ do_upgrade_bash_aliases() {
     if [[ $ZSH_VERSION ]]; then
         setopt localoptions rmstarsilent
     fi
-    if ping -c 1 gitee.com &> ~/.update_log; then 
-        mkdir -p ~/.kai_config
-        cd ~/.kai_config || { echo "Failed to change directory to ~/.kai_config" >> ~/.update_log 2>&1; return; }
-        rm -rf * >> ~/.update_log 2>&1 
-        wget -O ~/.kai_config/kai_config.zip https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip >> ~/.update_log 2>&1 
-        unzip -o kai_config.zip >> ~/.update_log 2>&1 
-        rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
-        cd linux_configs-main 
-        if [ -f /usr/share/bash-completion/completions/git ]; then
-            cp --preserve=timestamps /usr/share/bash-completion/completions/git .git-completion.bash >> ~/.update_log 2>&1
-        fi
-        if [ -f /etc/bash_completion.d/git-prompt ]; then
-            cp --preserve=timestamps /etc/bash_completion.d/git-prompt .git-prompt.sh >> ~/.update_log 2>&1
-        fi
-        cd ..
-        rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+    if ping -c 1 gitee.com &> ~/.update_log; then _url='https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip'; fi
+    if ping -c 1 github.com &> ~/.update_log; then _url='https://github.com/kaiwu-astro/linux-configs/archive/refs/heads/main.zip'; fi
+    if [[ -z $_url ]]; then
+        echo "No network connection or gitee/github is unreachable, skipping update." >> ~/.update_log 2>&1
+        return
     fi
+    mkdir -p ~/.kai_config
+    cd ~/.kai_config || { echo "Failed to change directory to ~/.kai_config" >> ~/.update_log 2>&1; return; }
+    rm -rf * >> ~/.update_log 2>&1 
+    wget -O ~/.kai_config/kai_config.zip $_url >> ~/.update_log 2>&1 
+    unzip -o kai_config.zip >> ~/.update_log 2>&1 
+    rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+    cd linux_configs-main 
+    if [ -f /usr/share/bash-completion/completions/git ]; then
+        cp --preserve=timestamps /usr/share/bash-completion/completions/git .git-completion.bash >> ~/.update_log 2>&1
+    fi
+    if [ -f /etc/bash_completion.d/git-prompt ]; then
+        cp --preserve=timestamps /etc/bash_completion.d/git-prompt .git-prompt.sh >> ~/.update_log 2>&1
+    fi
+    cd ..
+    rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
 }
 
 ((do_upgrade_bash_aliases &> /dev/null &) &)
@@ -395,6 +399,13 @@ alias nb6clean='rm -f $(tr "\n" " " < "$HOME/.nb6cleanlist")'
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
 alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
 get_zoxide() {
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
     wget https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.7/zoxide-0.9.7-x86_64-unknown-linux-musl.tar.gz && \
