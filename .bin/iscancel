@@ -42,8 +42,10 @@ def interactive_cancel(stdscr):
         key = stdscr.getch()
         if key == curses.KEY_UP:
             selected = (selected - 1 + len(jobs)) % len(jobs)
+            continue
         elif key == curses.KEY_DOWN:
             selected = (selected + 1) % len(jobs)
+            continue
         elif key in (ord('k'), ord('K'), ord('c'), ord('C')):
             job_id = jobs[selected][jobid_index]
             subprocess.run(["scancel", job_id])
