@@ -16,6 +16,7 @@ def get_jobs():
 
 def interactive_cancel(stdscr):
     curses.curs_set(0)
+    stdscr.timeout(2000)  # Set a 2-second timeout for getch()
     stdscr.clear()
     headers, jobs, jobid_index = get_jobs()
     
@@ -51,10 +52,11 @@ def interactive_cancel(stdscr):
                 selected = max(0, len(jobs) - 1)
         elif key in (ord('q'), ord('Q')):
             break
-        else:
-            headers, jobs, jobid_index = get_jobs()
-            if selected >= len(jobs):
-                selected = max(0, len(jobs) - 1)
+        
+        # Refresh job list on timeout (when getch returns -1) or any other key
+        headers, jobs, jobid_index = get_jobs()
+        if selected >= len(jobs):
+            selected = max(0, len(jobs) - 1)
         
         stdscr.refresh()
 
