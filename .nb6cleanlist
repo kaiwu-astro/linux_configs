@@ -142,5 +142,7 @@ config.log*
 TDE.98*
 data.*
 dump_merger.*
+dump_merger_*
 input.par*
 hard_large_energy.*
+check.perf.*

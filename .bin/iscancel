@@ -28,16 +28,19 @@ def interactive_cancel(stdscr):
             # Return a message to be printed after curses exits
             return "No jobs found for the current user."
         
-        stdscr.addstr(0, 0, "Use UP/DOWN to navigate, C/K to cancel, Q to quit")
-        stdscr.addstr(1, 0, "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*headers))
-        for idx, job in enumerate(jobs):
-            line = "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*job)
-            if idx == selected:
-                stdscr.attron(curses.A_REVERSE)
-                stdscr.addstr(idx + 2, 0, line)
-                stdscr.attroff(curses.A_REVERSE)
-            else:
-                stdscr.addstr(idx + 2, 0, line)
+        try:
+            stdscr.addstr(0, 0, "Use UP/DOWN to navigate, C/K to cancel, Q to quit")
+            stdscr.addstr(1, 0, "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*headers))
+            for idx, job in enumerate(jobs):
+                line = "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*job)
+                if idx == selected:
+                    stdscr.attron(curses.A_REVERSE)
+                    stdscr.addstr(idx + 2, 0, line)
+                    stdscr.attroff(curses.A_REVERSE)
+                else:
+                    stdscr.addstr(idx + 2, 0, line)
+        except curses.error:
+            stdscr.addstr(0, 0, " @@@ too many jobs ! not enough vertial space @@@")
         
         key = stdscr.getch()
         if key == curses.KEY_UP:
