@@ -380,6 +380,8 @@ firstjobhere() {
 }
 alias lastj='lastjobhere'
 alias firstj='firstjobhere'
+alias firstjj="ls | grep -E '^[0-9]+$' | sort -n | head -n 1"
+alias lastjj="ls | grep -E '^[0-9]+$' | sort -n | tail -n 1"
 alias ipy='ipython3'
 alias ipython='ipython3'
 alias rsync='rsync -a -h --info=progress2'
