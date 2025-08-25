@@ -34,10 +34,6 @@ do_upgrade_bash_aliases() {
 
 ((do_upgrade_bash_aliases &> /dev/null &) &)
 
-if [ -f ~/.bash_aliases_local ]; then
-    . ~/.bash_aliases_local
-fi
-
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -481,3 +477,8 @@ EOT
     chmod a+x $HOME/install_petar.sh
     echo "write to $HOME/install_petar.sh"
 }
+
+
+if [ -f ~/.bash_aliases_local ]; then
+    . ~/.bash_aliases_local
+fi
