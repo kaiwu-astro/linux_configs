@@ -1,6 +1,7 @@
 type emulate >/dev/null 2>/dev/null || alias emulate=true
 # sync: 
-# download once with wget -O ~/.bash_aliases https://gitee.com/kaiwu-astro/linux_configs/raw/main/.bash_aliases && source ~/.bash_aliases
+# download once with 
+# wget -O ~/.bash_aliases https://gitee.com/kaiwu-astro/linux_configs/raw/main/.bash_aliases && source ~/.bash_aliases
 # if not working, add source ~/.bash_aliases to ~/.profile
 # inner network machine: (ping -c 1 silk3 &> /dev/null && rsync silk3:~/.kai_config/ ~/ &> /dev/null &) 
 
@@ -392,8 +393,12 @@ alias petarls="ls | egrep '^data.[0-9]+$' | sort -n -k 1.6"
 alias galevclean='rm spec_out*; rm stellar_magnitude*; rm log_GalevNB*; rm fort.13'
 alias git_update='git fetch --all && git reset --hard origin/dev '
 alias cls='clear'
-alias nb6cp="rsync -a --exclude-from=$HOME/.nb6cleanlist"
-alias nb6clean='rm -f $(tr "\n" " " < "$HOME/.nb6cleanlist")'
+nb6cp() {
+    rsync -a --exclude-from=$HOME/.nb6cleanlist $*
+}
+nb6clean() {
+    rm -f $(tr "\n" " " < "$HOME/.nb6cleanlist")
+}
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
 alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
