@@ -358,7 +358,8 @@ export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
 
 alias wdiff='git diff -U0 --word-diff --no-index --'
 alias lastjob='squeue -u $USER -o "%i" | sort | tail -n 2 | head -n 1'
-alias jobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n'
+alias oldjobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n'
+alias jobhere="ls | grep -E '^[0-9]+$' | sort -n"
 lastjobhere() {
     emulate -L ksh
     local n=1
@@ -377,8 +378,8 @@ firstjobhere() {
 }
 alias lastj='lastjobhere'
 alias firstj='firstjobhere'
-alias firstjj="ls | grep -E '^[0-9]+$' | sort -n | head -n 1"
-alias lastjj="ls | grep -E '^[0-9]+$' | sort -n | tail -n 1"
+# alias firstjj="ls | grep -E '^[0-9]+$' | sort -n | head -n 1"
+# alias lastjj="ls | grep -E '^[0-9]+$' | sort -n | tail -n 1"
 alias ipy='ipython3'
 alias ipython='ipython3'
 alias rsync='rsync -a -h --info=progress2'
