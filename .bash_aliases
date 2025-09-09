@@ -398,7 +398,7 @@ nb6cp() {
     rsync -a --exclude-from=$HOME/.nb6cleanlist $*
 }
 nb6clean() {
-    rm -f $(tr "\n" " " < "$HOME/.nb6cleanlist")
+    bash -c 'rm -f $(tr "\n" " " < "$HOME/.nb6cleanlist")'
 }
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
@@ -468,7 +468,7 @@ module --force purge
 module load Stages/2025 GCC HDF5/1.14.5-serial ParaStationMPI GSL git IPython
 # alternatively, module load Stages/2024 GCC HDF5/1.14.2-serial ParaStationMPI GSL/2.7 git IPython/8.14.0
 module list
-pip install --user galpy
+pip install --user galpy==1.10.2
 git clone https://github.com/lwang-astro/PeTar
 git clone https://github.com/FDPS/FDPS
 cd FDPS && git checkout v7.0 && cd ..
