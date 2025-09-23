@@ -402,7 +402,7 @@ nb6clean() {
 }
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
-alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null && rm -rf "$temp_dir"'
+alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null'
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -412,22 +412,22 @@ function y() {
 }
 get_zoxide() {
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    wget https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.7/zoxide-0.9.7-x86_64-unknown-linux-musl.tar.gz && \
-    tar -xvf zoxide-0.9.7-x86_64-unknown-linux-musl.tar.gz && \
+    wget https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.8/zoxide-0.9.8-x86_64-unknown-linux-musl.tar.gz && \
+    tar -xvf zoxide-0.9.8-x86_64-unknown-linux-musl.tar.gz && \
     mkdir -p ~/user-software/bin && \
     cp -p zoxide ~/user-software/bin/ && \
-    cd - > /dev/null && rm -rf "$temp_dir" && \
+    cd - > /dev/null && \
     shellname=`basename "$(readlink /proc/$$/exe)"` && \
     _cmd='eval "$(zoxide init --cmd cd '"$shellname"')"'
     echo $_cmd >> ~/.${shellname}rc
 }
 get_fzf() {
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    wget https://github.com/junegunn/fzf/releases/download/v0.62.0/fzf-0.62.0-linux_amd64.tar.gz && \
-    tar -xvf fzf-0.62.0-linux_amd64.tar.gz && \
+    wget https://github.com/junegunn/fzf/releases/download/v0.65.2/fzf-0.65.2-linux_amd64.tar.gz && \
+    tar -xvf fzf-0.65.2-linux_amd64.tar.gz && \
     mkdir -p ~/user-software/bin && \
     cp -p fzf ~/user-software/bin/ && \
-    cd - > /dev/null && rm -rf "$temp_dir" && \
+    cd - > /dev/null && \
     shellname=`basename "$(readlink /proc/$$/exe)"` && \
     _cmd='source <(fzf --'"$shellname"')'
     echo $_cmd >> ~/.${shellname}rc
@@ -441,7 +441,7 @@ get_pv() {
     mkdir -p $HOME/user-software && \
     sh ./configure --prefix=$HOME/user-software && \
     make -j 4 && make install && \
-    cd $_oldpwd > /dev/null && rm -rf "$temp_dir"
+    cd $_oldpwd > /dev/null
 }
 alias cdabs='cd $(readlink -f .)'
 get_btop() {
@@ -458,7 +458,7 @@ get_btop() {
     cd btop && \
     mkdir -p ~/user-software && \
     make install PREFIX=$HOME/user-software && \
-    cd ~ > /dev/null && rm -rf "$temp_dir"
+    cd ~ > /dev/null
 }
 get_petar() {
     cat << 'EOT' > $HOME/install_petar.sh
@@ -482,6 +482,15 @@ make -j 10 && make install
 EOT
     chmod a+x $HOME/install_petar.sh
     echo "write to $HOME/install_petar.sh"
+}
+get_tmux() {
+    temp_dir=$(mktemp -d) && cd "$temp_dir" && \
+    wget https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz && \
+    tar -xzf tmux-3.5a.tar.gz && cd tmux-3.5a && \
+    mkdir -p $HOME/user-software && \
+    ./configure --prefix=$HOME/user-software && \
+    make -j 4 && make install && \
+    cd ~ > /dev/null
 }
 
 

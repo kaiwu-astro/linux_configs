@@ -17,8 +17,10 @@ map Ω :set wrap!<CR> |" MacOS option+z
 map <C-l> :set nu!<CR>
 map <C-w> :q<CR>
 map <C-s> :w<CR>
-nnoremap <S-Up> :m-2<CR>
-nnoremap <S-Down> :m+1<CR>
+nnoremap <S-Up> :m-2<CR> |" shift + 上箭头 = 移动当前行到上一行
+nnoremap <S-Down> :m+1<CR> |" shift + 下箭头 = 移动当前行到下一行
+nnoremap <silent> <C-Left>  zH |" control + 左箭头 = 水平向左移动
+nnoremap <silent> <C-Right> zL |" control + 右箭头 = 水平向右移动
 map <C-k> d$
 map <C-a> ^
 map <C-e> $
