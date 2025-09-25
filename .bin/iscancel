@@ -29,7 +29,7 @@ def interactive_cancel(stdscr):
             return "No jobs found for the current user."
         
         try:
-            stdscr.addstr(0, 0, "Use UP/DOWN to navigate, C/K to cancel, Q to quit")
+            stdscr.addstr(0, 0, "Use UP/DOWN to navigate, Q to quit, C/K to send scancel, 3 to send SIGQUIT")
             stdscr.addstr(1, 0, "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*headers))
             for idx, job in enumerate(jobs):
                 line = "{:<10} {:<10} {:<10} {:<5} {:<3} {:<8} {:<6} {:<10}".format(*job)
@@ -52,6 +52,13 @@ def interactive_cancel(stdscr):
         elif key in (ord('k'), ord('K'), ord('c'), ord('C')):
             job_id = jobs[selected][jobid_index]
             subprocess.run(["scancel", job_id])
+            headers, jobs, jobid_index = get_jobs()
+            if selected >= len(jobs):
+                selected = max(0, len(jobs) - 1)
+        elif key == ord('3'):
+            # Send QUIT signal to selected job
+            job_id = jobs[selected][jobid_index]
+            subprocess.run(["scancel", "--signal=QUIT", job_id])
             headers, jobs, jobid_index = get_jobs()
             if selected >= len(jobs):
                 selected = max(0, len(jobs) - 1)
