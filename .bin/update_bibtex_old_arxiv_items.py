@@ -1,6 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Check ADS to update BibTeX entries. 
+Replace old arXiv items and replace them with published versions, if exists.
+
+Logic:
+1. If the BibTeX entry is an arXiv paper (journal = {arXiv e-prints}), extract the bibcode from the adsurl field.
+2. Use the bibcode to call the ADS Export API to obtain the updated BibTeX entry.
+3. If the returned BibTeX entry is still an arXiv paper, skip it.
+4. Otherwise, replace the cite key in the returned BibTeX entry with the original entry's cite key, and write it to the output in a new file.
+5. Note: You need to first obtain an ADS API Token and save it to the ~/.ads_api_token file. https://github.com/adsabs/adsabs-dev-api?tab=readme-ov-file#access
+
+Usage:
+    update_bibtex_old_arxiv_items.py <input_bib_path>
+
+Output: 
+    'old_bib_name_updated.bib' in the same directory.
+
+"""
+
 import json
 import os
 import re
@@ -14,8 +32,8 @@ ADS_EXPORT_URL = "https://api.adsabs.harvard.edu/v1/export/bibtex"
 
 def split_entries_with_lines(lines: List[str]) -> List[Tuple[int, int, List[str]]]:
     """
-    将 bibtex 文件按条目划分，并返回 [(start_line_idx, end_line_idx, entry_lines), ...]
-    end_line_idx 为 slice 末端索引（即 entry 在原列表中的切片 lines[start:end]）
+    Split the BibTeX file into entries and return [(start_line_idx, end_line_idx, entry_lines), ...].
+    end_line_idx is the slice end index (lines[start:end] in the original list).
     """
     entries = []
     start = None
@@ -31,7 +49,7 @@ def split_entries_with_lines(lines: List[str]) -> List[Tuple[int, int, List[str]
 
 def extract_cite_key(entry_text: str) -> Tuple[str, str]:
     """
-    从 BibTeX 字符串中提取 entry 类型和 cite key
+    Extract entry type and cite key from a BibTeX string.
     """
     match = re.match(r'\s*@\s*([A-Za-z]+)\s*{\s*([^,]+)\s*,', entry_text, flags=re.DOTALL)
     if not match:
@@ -42,21 +60,21 @@ def extract_cite_key(entry_text: str) -> Tuple[str, str]:
 
 def has_arxiv_journal(entry_text: str) -> bool:
     """
-    判断条目是否为 arXiv 引用：journal = {arXiv e-prints}
+    Check whether the entry is an arXiv citation: journal = {arXiv e-prints}
     """
     return bool(re.search(r'journal\s*=\s*[{"]\s*arXiv\s+e-prints\s*["}]?', entry_text, re.IGNORECASE))
 
 
 def validate_adsurl(entry_text: str) -> bool:
     """
-    验证 adsurl 是否符合包含 abs 和 arxiv 的要求
+    Validate that adsurl contains both abs and arxiv.
     """
     return bool(re.search(r'adsurl\s*=\s*[{"]\s*https?://[^}]*abs[^}]*arxiv', entry_text, re.IGNORECASE))
 
 
 def extract_bibcode(entry_text: str) -> str:
     """
-    从 adsurl 中提取 bibcode
+    Extract bibcode from adsurl.
     """
     match = re.search(
         r'adsurl\s*=\s*[{"]\s*https?://ui\.adsabs\.harvard\.edu/abs/([^}"/\s]+)',
@@ -64,17 +82,17 @@ def extract_bibcode(entry_text: str) -> str:
         re.IGNORECASE
     )
     if not match:
-        raise ValueError("未能从 adsurl 中提取 bibcode")
+        raise ValueError("Failed to extract bibcode from adsurl")
     return match.group(1)
 
 
 def load_api_token(token_path: Path = Path("~/.ads_api_token").expanduser()) -> str:
     if not token_path.exists():
-        raise RuntimeError("未找到 ~/.ads_api_token 文件。")
+        raise RuntimeError("Could not find the ~/.ads_api_token file.")
     with token_path.open("r", encoding="utf-8") as f:
         first_line = f.readline().strip()
     if not first_line:
-        raise RuntimeError("~/.ads_api_token 文件为空。")
+        raise RuntimeError("The ~/.ads_api_token file is empty.")
     return first_line
 
 
@@ -95,12 +113,12 @@ def fetch_updated_entry(bibcode: str, api_token: str) -> str:
     )
     if not response.ok:
         raise RuntimeError(
-            f"ADS API 返回错误状态码 {response.status_code}: {response.text}"
+            f"ADS API returned status code {response.status_code}: {response.text}"
         )
     data = response.json()
     updated_entry = data.get("export")
     if not updated_entry:
-        raise RuntimeError("ADS API 返回中缺失 'export' 字段")
+        raise RuntimeError("The ADS API response is missing the 'export' field")
     return updated_entry
 
 
@@ -121,18 +139,21 @@ def replace_cite_key(entry_text: str, new_key: str) -> str:
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("❌ 请提供输入 BibTeX 文件路径作为第一个参数", file=sys.stderr)
-        sys.exit(1)
+    args = sys.argv[1:]
+    if not args or args[0] in {"-h", "--help"}:
+        help_text = (__doc__ or "").strip()
+        if help_text:
+            print(help_text)
+        return
 
-    input_bib_path = Path(sys.argv[1]).expanduser()
+    input_bib_path = Path(args[0]).expanduser()
     if not input_bib_path.exists():
-        print(f"❌ 输入文件不存在：{input_bib_path}", file=sys.stderr)
+        print(f"❌ Input file does not exist: {input_bib_path}", file=sys.stderr)
         sys.exit(1)
     try:
         api_token = load_api_token()
     except RuntimeError as exc:
-        print(f"❌ {exc}请参考 https://github.com/adsabs/adsabs-dev-api?tab=readme-ov-file#access 添加 token。", file=sys.stderr)
+        print(f"❌ {exc} Please refer to https://github.com/adsabs/adsabs-dev-api?tab=readme-ov-file#access to add the token.", file=sys.stderr)
         sys.exit(1)
 
     with input_bib_path.open("r", encoding="utf-8") as f:
@@ -142,14 +163,14 @@ def main():
     updated_entries: List[str] = []
     updated_count = 0
 
-    print(f"共发现 {len(entries)} 个 BibTeX 条目。开始检查 arXiv 条目...\n")
+    print(f"Found {len(entries)} BibTeX entries. Starting to check arXiv entries...\n")
 
     for start_idx, end_idx, entry_lines in entries:
         entry_text = "".join(entry_lines)
         try:
             entry_type, cite_key = extract_cite_key(entry_text)
         except ValueError:
-            print(f"[❗️ 警告] 第 {start_idx + 1} 行条目无法解析 cite key，已跳过。")
+            print(f"[❗️ Warning] Entry at line {start_idx + 1} cannot parse cite key. Skipped.")
             updated_entries.append(entry_text)
             continue
 
@@ -158,31 +179,31 @@ def main():
             updated_entries.append(entry_text)
             continue
 
-        print(f"[信息] 第 {start_idx + 1} 行：检测到 arXiv 条目 -> cite_key = {cite_key}")
+        print(f"[Info] Line {start_idx + 1}: Detected arXiv entry -> cite_key = {cite_key}")
 
         if not validate_adsurl(entry_text):
-            print(f"  [❌ 错误] adsurl 字段未通过验证（需要包含 abs 与 arxiv），跳过：{cite_key}")
+            print(f"  [❌ Error] The adsurl field failed validation (it must include abs and arxiv). Skipped: {cite_key}")
             updated_entries.append(entry_text)
             continue
 
         try:
             bibcode = extract_bibcode(entry_text)
         except ValueError as exc:
-            print(f"  [❗️ 警告] {exc} -> 跳过：{cite_key}")
+            print(f"  [❗️ Warning] {exc} -> Skipped: {cite_key}")
             updated_entries.append(entry_text)
             continue
 
-        print(f"  [信息] 提取到 ADS bibcode: {bibcode}")
+        print(f"  [Info] Extracted ADS bibcode: {bibcode}")
 
         try:
             updated_entry = fetch_updated_entry(bibcode, api_token)
         except Exception as exc:
-            print(f"  [❌ 失败] ADS API 调用失败：{exc} -> 跳过：{cite_key}")
+            print(f"  [❌ Failure] ADS API call failed: {exc} -> Skipped: {cite_key}")
             updated_entries.append(entry_text)
             continue
 
         if has_arxiv_journal(updated_entry):
-            print(f"  [🤪 信息] ADS 返回结果仍为 arXiv 条目，跳过：{cite_key}")
+            print(f"  [🤪 Info] ADS response is still an arXiv entry. Skipped: {cite_key}")
             updated_entries.append(entry_text)
             continue
 
@@ -191,14 +212,14 @@ def main():
             updated_entry += "\n"
         updated_entries.append(updated_entry)
         updated_count += 1
-        print(f"  [✅ 成功] 已更新 {cite_key}\n")
+        print(f"  [✅ Success] Updated {cite_key}\n")
 
     output_path = input_bib_path.with_stem(input_bib_path.stem + "_updated")
     with output_path.open("w", encoding="utf-8") as f:
         f.write("".join(updated_entries))
 
-    print(f"\n处理完成，共更新 {updated_count} 个 arXiv 条目。")
-    print(f"更新后的 BibTeX 文件已写入：{output_path}")
+    print(f"\nProcessing finished. Updated {updated_count} arXiv entries.")
+    print(f"The updated BibTeX file has been written to: {output_path}")
 
 
 if __name__ == "__main__":
