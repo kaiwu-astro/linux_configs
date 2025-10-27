@@ -164,7 +164,7 @@ def main():
     updated_entries: List[str] = []
     updated_count = 0
 
-    print(f"Found {len(entries)} BibTeX entries. Starting to check arXiv entries...\n")
+    print(f"Found {len(entries)} BibTeX entries. Starting to check arXiv entries...")
 
     for start_idx, end_idx, entry_lines in entries:
         entry_text = "".join(entry_lines)
@@ -213,7 +213,7 @@ def main():
             updated_entry += "\n"
         updated_entries.append(updated_entry)
         updated_count += 1
-        print(f"  [✅ Success] Updated {cite_key}\n")
+        print(f"  [✅ Success] Updated {cite_key}")
 
     output_path = input_bib_path.with_stem(input_bib_path.stem + "_updated")
     with output_path.open("w", encoding="utf-8") as f:
