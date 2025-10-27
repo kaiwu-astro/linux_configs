@@ -16,6 +16,7 @@ Usage:
 
 Output: 
     'old_bib_name_updated.bib' in the same directory.
+    After that, you can use `diff` command to manually inspect the differences.
 
 """
 
@@ -53,7 +54,7 @@ def extract_cite_key(entry_text: str) -> Tuple[str, str]:
     """
     match = re.match(r'\s*@\s*([A-Za-z]+)\s*{\s*([^,]+)\s*,', entry_text, flags=re.DOTALL)
     if not match:
-        raise ValueError("无法解析 cite key")
+        raise ValueError("Cannot extract cite key")
     entry_type, cite_key = match.group(1).strip(), match.group(2).strip()
     return entry_type, cite_key
 
@@ -98,7 +99,7 @@ def load_api_token(token_path: Path = Path("~/.ads_api_token").expanduser()) -> 
 
 def fetch_updated_entry(bibcode: str, api_token: str) -> str:
     """
-    调用 ADS Export API 获取更新后的 BibTeX
+    Use the ADS Export API to fetch the updated BibTeX entry.
     """
     headers = {
         "Authorization": f"Bearer {api_token}",
@@ -124,7 +125,7 @@ def fetch_updated_entry(bibcode: str, api_token: str) -> str:
 
 def replace_cite_key(entry_text: str, new_key: str) -> str:
     """
-    将 BibTeX 条目的 cite key 替换为指定的 new_key
+    Replace the cite key of a BibTeX entry with the specified new_key.
     """
     def replacer(match):
         return f"{match.group(1)}{new_key}{match.group(3)}"
@@ -175,7 +176,7 @@ def main():
             continue
 
         if not has_arxiv_journal(entry_text):
-            # 非 arXiv，保持原样
+            # non arXiv entry, keep original
             updated_entries.append(entry_text)
             continue
 
