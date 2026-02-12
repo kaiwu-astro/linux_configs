@@ -484,11 +484,15 @@ EOT
     echo "write to $HOME/install_petar.sh"
 }
 get_tmux() {
+    # 获取第一个参数，如果为空则默认为 3.5a
+    local version="${1:-3.5a}"
+    local temp_dir
+    
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    wget https://github.com/tmux/tmux/releases/download/3.5a/tmux-3.5a.tar.gz && \
-    tar -xzf tmux-3.5a.tar.gz && cd tmux-3.5a && \
-    mkdir -p $HOME/user-software && \
-    ./configure --prefix=$HOME/user-software && \
+    wget "https://github.com/tmux/tmux/releases/download/${version}/tmux-${version}.tar.gz" && \
+    tar -xzf "tmux-${version}.tar.gz" && cd "tmux-${version}" && \
+    mkdir -p "$HOME/user-software" && \
+    ./configure --prefix="$HOME/user-software" && \
     make -j 4 && make install && \
     cd ~ > /dev/null
 }
