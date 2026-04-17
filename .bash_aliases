@@ -498,6 +498,40 @@ get_tmux() {
     cd ~ > /dev/null
 }
 
+get_codex() {
+    local temp_dir
+    local asset
+    local url
+    local binfile
+    local rc
+
+    mkdir -p "$HOME/user-software/bin" || return 1
+
+    temp_dir=$(mktemp -d) || return 1
+    asset="codex-x86_64-unknown-linux-musl.tar.gz"
+    url="https://github.com/openai/codex/releases/latest/download/$asset"
+
+    (
+        cd "$temp_dir" || exit 1
+
+        curl -fL "$url" -o "$asset" || exit 1
+        tar -xzf "$asset" || exit 1
+
+        binfile=$(find "$temp_dir" -maxdepth 2 -type f -name 'codex-*' | head -n 1)
+        if [ -z "$binfile" ]; then
+            echo "Error: codex binary not found after extraction."
+            exit 1
+        fi
+
+        install -m 755 "$binfile" "$HOME/user-software/bin/codex" || exit 1
+        "$HOME/user-software/bin/codex" --version
+    )
+    rc=$?
+
+    rm -rf "$temp_dir"
+    return $rc
+}
+
 
 if [ -f ~/.bash_aliases_local ]; then
     . ~/.bash_aliases_local
