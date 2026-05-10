@@ -469,8 +469,8 @@ get_btop() {
     fi
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
     arch=$(__arch) && \
-    wget "https://github.com/aristocratos/btop/releases/latest/download/btop-${arch}-linux-musl.tbz" && \
-    tar -xvf "btop-${arch}-linux-musl.tbz" && \
+    wget "https://github.com/aristocratos/btop/releases/latest/download/btop-${arch}-unknown-linux-musl.tbz" && \
+    tar -xvf "btop-${arch}-unknown-linux-musl.tbz" && \
     cd btop && \
     mkdir -p ~/user-software && \
     make install PREFIX=$HOME/user-software && \
