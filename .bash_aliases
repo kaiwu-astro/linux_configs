@@ -404,19 +404,18 @@ nb6clean() {
 }
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
-__arch() {
-    # local arch
-    # arch=$(uname -m)
-    # case "$arch" in
-    #     amd64) echo "x86_64";;
-    #     arm64) echo "aarch64";;
-    #     *) echo "$arch";;
-    # esac
-    echo $(uname -m)
+__arch_alias() {
+    local arch
+    arch=$(uname -m)
+    case "$arch" in
+        amd64) echo "x86_64";;
+        arm64) echo "aarch64";;
+        *) echo "$arch";;
+    esac
 }
 
-alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && arch=$(__arch) && wget "https://github.com/sxyazi/yazi/releases/latest/download/yazi-${arch}-unknown-linux-gnu.zip" && unzip "yazi-${arch}-unknown-linux-gnu.zip" && mkdir -p ~/user-software/bin && cp -pr yazi-${arch}-unknown-linux-gnu/ya* yazi-${arch}-unknown-linux-gnu/completions ~/user-software/bin/ && cd - > /dev/null'
-alias get_yazi_musl='temp_dir=$(mktemp -d) && cd "$temp_dir" && arch=$(__arch) && wget "https://github.com/sxyazi/yazi/releases/latest/download/yazi-${arch}-unknown-linux-musl.zip" && unzip "yazi-${arch}-unknown-linux-musl.zip" && mkdir -p ~/user-software/bin && cp -pr yazi-${arch}-unknown-linux-musl/ya* yazi-${arch}-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null'
+alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && arch=$(uname -m) && wget "https://github.com/sxyazi/yazi/releases/download/v25.2.11/yazi-${arch}-unknown-linux-gnu.zip" && unzip "yazi-${arch}-unknown-linux-gnu.zip" && mkdir -p ~/user-software/bin && cp -pr yazi-${arch}-unknown-linux-gnu/ya* yazi-${arch}-unknown-linux-gnu/completions ~/user-software/bin/ && cd - > /dev/null'
+alias get_yazi_musl='temp_dir=$(mktemp -d) && cd "$temp_dir" && arch=$(uname -m) && wget "https://github.com/sxyazi/yazi/releases/latest/download/yazi-${arch}-unknown-linux-musl.zip" && unzip "yazi-${arch}-unknown-linux-musl.zip" && mkdir -p ~/user-software/bin && cp -pr yazi-${arch}-unknown-linux-musl/ya* yazi-${arch}-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null'
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -426,7 +425,7 @@ function y() {
 }
 get_zoxide() {
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    arch=$(__arch) && \
+    arch=$(uname -m) && \
     wget "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.8/zoxide-0.9.8-${arch}-unknown-linux-musl.tar.gz" && \
     tar -xvf "zoxide-0.9.8-${arch}-unknown-linux-musl.tar.gz" && \
     mkdir -p ~/user-software/bin && \
@@ -438,8 +437,8 @@ get_zoxide() {
 }
 get_fzf() {
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    wget https://github.com/junegunn/fzf/releases/download/v0.65.2/fzf-0.65.2-linux_amd64.tar.gz && \
-    tar -xvf fzf-0.65.2-linux_amd64.tar.gz && \
+    wget https://github.com/junegunn/fzf/releases/download/v0.65.2/fzf-0.65.2-linux_$(__arch_alias).tar.gz && \
+    tar -xvf fzf-0.65.2-linux_$(__arch_alias).tar.gz && \
     mkdir -p ~/user-software/bin && \
     cp -p fzf ~/user-software/bin/ && \
     cd - > /dev/null && \
@@ -468,7 +467,7 @@ get_btop() {
         echo "Installing btop without GPU support"
     fi
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    arch=$(__arch) && \
+    arch=$(uname -m) && \
     wget "https://github.com/aristocratos/btop/releases/latest/download/btop-${arch}-unknown-linux-musl.tbz" && \
     tar -xvf "btop-${arch}-unknown-linux-musl.tbz" && \
     cd btop && \
@@ -521,7 +520,7 @@ get_codex() {
     local rc
 
     local arch
-    arch=$(__arch)
+    arch=$(uname -m)
 
     mkdir -p "$HOME/user-software/bin" || return 1
 
