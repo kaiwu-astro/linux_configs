@@ -10,18 +10,18 @@ do_upgrade_bash_aliases() {
     if [[ $ZSH_VERSION ]]; then
         setopt localoptions rmstarsilent
     fi
-    if ping -c 1 gitee.com &> ~/.update_log; then _url='https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip'; fi
-    if ping -c 1 github.com &> ~/.update_log; then _url='https://github.com/kaiwu-astro/linux-configs/archive/refs/heads/main.zip'; fi
+    if ping -c 1 gitee.com; then _url='https://gitee.com/kaiwu-astro/linux_configs/repository/archive/main.zip'; fi
+    if ping -c 1 github.com; then _url='https://github.com/kaiwu-astro/linux-configs/archive/refs/heads/main.zip'; fi
     if [[ -z $_url ]]; then
         echo "No network connection or gitee/github is unreachable, skipping update." >> ~/.update_log 2>&1
         return
     fi
     mkdir -p ~/.kai_config
     cd ~/.kai_config || { echo "Failed to change directory to ~/.kai_config" >> ~/.update_log 2>&1; return; }
-    rm -rf * >> ~/.update_log 2>&1 
-    wget -O ~/.kai_config/kai_config.zip $_url >> ~/.update_log 2>&1 
-    unzip -o kai_config.zip >> ~/.update_log 2>&1 
-    rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+    rm -rf * 
+    wget -O ~/.kai_config/kai_config.zip $_url 
+    unzip -o kai_config.zip 
+    rsync -a linux_configs-main/ ~ 
     cd linux_configs-main 
     if [ -f /usr/share/bash-completion/completions/git ]; then
         cp --preserve=timestamps /usr/share/bash-completion/completions/git .git-completion.bash >> ~/.update_log 2>&1
@@ -30,12 +30,12 @@ do_upgrade_bash_aliases() {
         cp --preserve=timestamps /etc/bash_completion.d/git-prompt .git-prompt.sh >> ~/.update_log 2>&1
     fi
     cd ..
-    rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+    rsync -a linux_configs-main/ ~ 
     echo "Update completed at $(date)" >> ~/.update_log 2>&1
     cd ~
 }
 
-((do_upgrade_bash_aliases &> /dev/null &) &)
+((do_upgrade_bash_aliases >> ~/.update_log 2>&1 &) &)
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
