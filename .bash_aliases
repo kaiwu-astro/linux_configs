@@ -31,6 +31,8 @@ do_upgrade_bash_aliases() {
     fi
     cd ..
     rsync -a linux_configs-main/ ~ >> ~/.update_log 2>&1 
+    echo "Update completed at $(date)" >> ~/.update_log 2>&1
+    cd ~
 }
 
 ((do_upgrade_bash_aliases &> /dev/null &) &)
