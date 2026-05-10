@@ -408,8 +408,8 @@ __arch_alias() {
     local arch
     arch=$(uname -m)
     case "$arch" in
-        amd64) echo "x86_64";;
-        arm64) echo "aarch64";;
+        x86_64)  echo "amd64";;
+        aarch64) echo "arm64";;
         *) echo "$arch";;
     esac
 }
