@@ -402,8 +402,19 @@ nb6clean() {
 }
 alias lastedit='echo "上一次输出在$(( $(date +%s) - $(stat -c %Y "$(ls -t | head -n1)") ))秒前"'
 alias cpuusage='top -bn2 | grep "Cpu(s)" | tail -n1 | awk "{print 100 - \$8}"'
-alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-gnu.zip && unzip yazi-x86_64-unknown-linux-gnu.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-gnu/ya* yazi-x86_64-unknown-linux-gnu/completions ~/user-software/bin/ && cd - > /dev/null'
-alias get_yazi_musl='temp_dir=$(mktemp -d) && cd "$temp_dir" && wget https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip && unzip yazi-x86_64-unknown-linux-musl.zip && mkdir -p ~/user-software/bin && cp -pr yazi-x86_64-unknown-linux-musl/ya* yazi-x86_64-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null'
+__arch() {
+    # local arch
+    # arch=$(uname -m)
+    # case "$arch" in
+    #     amd64) echo "x86_64";;
+    #     arm64) echo "aarch64";;
+    #     *) echo "$arch";;
+    # esac
+    echo $(uname -m)
+}
+
+alias get_yazi='temp_dir=$(mktemp -d) && cd "$temp_dir" && arch=$(__arch) && wget "https://github.com/sxyazi/yazi/releases/latest/download/yazi-${arch}-unknown-linux-gnu.zip" && unzip "yazi-${arch}-unknown-linux-gnu.zip" && mkdir -p ~/user-software/bin && cp -pr yazi-${arch}-unknown-linux-gnu/ya* yazi-${arch}-unknown-linux-gnu/completions ~/user-software/bin/ && cd - > /dev/null'
+alias get_yazi_musl='temp_dir=$(mktemp -d) && cd "$temp_dir" && arch=$(__arch) && wget "https://github.com/sxyazi/yazi/releases/latest/download/yazi-${arch}-unknown-linux-musl.zip" && unzip "yazi-${arch}-unknown-linux-musl.zip" && mkdir -p ~/user-software/bin && cp -pr yazi-${arch}-unknown-linux-musl/ya* yazi-${arch}-unknown-linux-musl/completions ~/user-software/bin/ && cd - > /dev/null'
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -413,8 +424,9 @@ function y() {
 }
 get_zoxide() {
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    wget https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.8/zoxide-0.9.8-x86_64-unknown-linux-musl.tar.gz && \
-    tar -xvf zoxide-0.9.8-x86_64-unknown-linux-musl.tar.gz && \
+    arch=$(__arch) && \
+    wget "https://github.com/ajeetdsouza/zoxide/releases/download/v0.9.8/zoxide-0.9.8-${arch}-unknown-linux-musl.tar.gz" && \
+    tar -xvf "zoxide-0.9.8-${arch}-unknown-linux-musl.tar.gz" && \
     mkdir -p ~/user-software/bin && \
     cp -p zoxide ~/user-software/bin/ && \
     cd - > /dev/null && \
@@ -454,8 +466,9 @@ get_btop() {
         echo "Installing btop without GPU support"
     fi
     temp_dir=$(mktemp -d) && cd "$temp_dir" && \
-    wget https://github.com/aristocratos/btop/releases/latest/download/btop-x86_64-linux-musl.tbz && \
-    tar -xvf btop-x86_64-linux-musl.tbz && \
+    arch=$(__arch) && \
+    wget "https://github.com/aristocratos/btop/releases/latest/download/btop-${arch}-linux-musl.tbz" && \
+    tar -xvf "btop-${arch}-linux-musl.tbz" && \
     cd btop && \
     mkdir -p ~/user-software && \
     make install PREFIX=$HOME/user-software && \
@@ -505,10 +518,13 @@ get_codex() {
     local binfile
     local rc
 
+    local arch
+    arch=$(__arch)
+
     mkdir -p "$HOME/user-software/bin" || return 1
 
     temp_dir=$(mktemp -d) || return 1
-    asset="codex-x86_64-unknown-linux-musl.tar.gz"
+    asset="codex-${arch}-unknown-linux-musl.tar.gz"
     url="https://github.com/openai/codex/releases/latest/download/$asset"
 
     (
