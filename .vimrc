@@ -5,7 +5,7 @@ set ai
 set expandtab
 set tabstop=4
 set shiftwidth=4
-set clipboard+=unnamedplus,autoselect
+" set clipboard+=unnamedplus,autoselect
 set copyindent
 set pastetoggle=<F3>
 set ignorecase
