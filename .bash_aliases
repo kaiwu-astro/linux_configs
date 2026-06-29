@@ -358,6 +358,7 @@ export PATH="$HOME/.bin:$HOME/bin:$HOME/user-software/bin:$PATH"
 
 ##############
 
+alias g1='git clone --depth 1'
 alias wdiff='git diff -U0 --word-diff --no-index --'
 alias lastjob='squeue -u $USER -o "%i" | sort | tail -n 2 | head -n 1'
 alias oldjobhere='ls N*.[0-9]*.out 2>/dev/null | sed -E "s/.*\.([0-9]+)\.out/\1/" | sort -n'
