@@ -574,6 +574,37 @@ get_codex() {
     return "$rc"
 }
 
+# Create a private GitHub repo and add it as a remote named "github"
+add_gh_remote() {
+  local repo="$1"
+  local remote_name="github"
+
+  if [ -z "$repo" ]; then
+    echo "Usage: gh-private-remote <repo-name>"
+    return 1
+  fi
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Error: current directory is not a git repository"
+    return 1
+  fi
+
+  if git remote get-url "$remote_name" >/dev/null 2>&1; then
+    echo "Error: remote '$remote_name' already exists"
+    return 1
+  fi
+
+  gh repo create "$repo" --private || return 1
+
+  local ssh_url
+  ssh_url="$(gh repo view "$repo" --json sshUrl -q .sshUrl)" || return 1
+
+  git remote add "$remote_name" "$ssh_url" || return 1
+
+  echo "Added remote '$remote_name' -> $ssh_url"
+  echo "Next: git push -u $remote_name $(git branch --show-current)"
+}
+
 
 if [ -f ~/.bash_aliases_local ]; then
     . ~/.bash_aliases_local
