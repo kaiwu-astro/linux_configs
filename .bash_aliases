@@ -605,6 +605,60 @@ add_gh_remote() {
   echo "Next: git push -u $remote_name $(git branch --show-current)"
 }
 
+# Create a private GitHub repo and add it as the second push URL
+# for the current branch's remote.
+add_gh_push() {
+  local repo="$1"
+
+  if [ -z "$repo" ]; then
+    echo "Usage: add_gh_push <repo-name>"
+    return 1
+  fi
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Error: current directory is not a git repository"
+    return 1
+  fi
+
+  local branch
+  branch="$(git branch --show-current)" || return 1
+  if [ -z "$branch" ]; then
+    echo "Error: current HEAD is detached; cannot infer branch remote"
+    return 1
+  fi
+
+  local remote_name
+  remote_name="$(git config --get "branch.${branch}.remote")"
+  if [ -z "$remote_name" ]; then
+    echo "Error: branch '$branch' has no configured remote"
+    return 1
+  fi
+
+  local push_urls
+  push_urls="$(git remote get-url --push --all "$remote_name")" || {
+    echo "Error: remote '$remote_name' has no push URL"
+    return 1
+  }
+
+  local push_url_count
+  push_url_count="$(printf '%s\n' "$push_urls" | sed '/^$/d' | wc -l | tr -d ' ')"
+  if [ "$push_url_count" != "1" ]; then
+    echo "Error: remote '$remote_name' must have exactly one existing push URL; found $push_url_count"
+    return 1
+  fi
+
+  gh repo create "$repo" --private || return 1
+
+  local ssh_url
+  ssh_url="$(gh repo view "$repo" --json sshUrl -q .sshUrl)" || return 1
+
+  git remote set-url --add --push "$remote_name" "$ssh_url" || return 1
+
+  echo "Added second push URL for '$remote_name' -> $ssh_url"
+  echo "Current push URLs:"
+  git remote get-url --push --all "$remote_name"
+}
+
 
 if [ -f ~/.bash_aliases_local ]; then
     . ~/.bash_aliases_local
