@@ -512,67 +512,7 @@ get_tmux() {
     make -j 4 && make install && \
     cd ~ > /dev/null
 }
-get_codex() {
-    local temp_dir
-    local asset
-    local url
-    local archive
-    local binfile
-    local arch
-    local target
-
-    arch="$(uname -m)"
-
-    case "$arch" in
-        aarch64|arm64)
-            target="aarch64-unknown-linux-musl"
-            ;;
-        x86_64|amd64)
-            target="x86_64-unknown-linux-musl"
-            ;;
-        *)
-            echo "Unsupported architecture: $arch" >&2
-            return 1
-            ;;
-    esac
-
-    mkdir -p "$HOME/user-software/bin"
-
-    temp_dir="$(mktemp -d)" || return 1
-    asset="codex-${target}.tar.gz"
-    archive="$temp_dir/$asset"
-    url="https://github.com/openai/codex/releases/latest/download/$asset"
-
-    curl -fL "$url" -o "$archive" || {
-        rm -rf "$temp_dir"
-        return 1
-    }
-
-    tar -xzf "$archive" -C "$temp_dir" || {
-        rm -rf "$temp_dir"
-        return 1
-    }
-
-    binfile="$(find "$temp_dir" -maxdepth 2 -type f -name "codex-${target}" -perm -111 | head -n 1)"
-
-    if [ -z "$binfile" ]; then
-        echo "Could not find extracted codex binary" >&2
-        echo "Extracted files:" >&2
-        find "$temp_dir" -maxdepth 3 -type f -ls >&2
-        rm -rf "$temp_dir"
-        return 1
-    fi
-
-    file "$binfile" >&2
-
-    install -m 755 "$binfile" "$HOME/user-software/bin/codex"
-
-    "$HOME/user-software/bin/codex" --version
-    local rc=$?
-
-    rm -rf "$temp_dir"
-    return "$rc"
-}
+alias get_codex='curl -fsSL https://chatgpt.com/codex/install.sh | sh'
 
 # Create a private GitHub repo and add it as a remote named "github"
 add_gh_remote() {
